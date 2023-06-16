@@ -15,8 +15,16 @@ public class VolunteerService {
         this.volunteerRepository = volunteerRepository;
     }
 
-    public void saveVolunteer(Volunteer volunteer) {
-        volunteerRepository.save(volunteer);
+    public Volunteer saveVolunteer(Volunteer volunteer) {
+        return volunteerRepository.save(volunteer);
+    }
+
+    public Volunteer getVolunteerByID(long id) {
+        return volunteerRepository.findVolunteersById(id);
+    }
+
+    public List<Volunteer> getAllVolunteers() {
+        return volunteerRepository.findAll();
     }
 
     public boolean checkVolunteerExists(String shelterName, long tgid) {
@@ -37,4 +45,13 @@ public class VolunteerService {
         Random random = new Random();
         return volunteerIds(shelterName).get(random.nextInt(volunteerIds(shelterName).size()));
     }
+
+    public Volunteer updateVolunteer(Volunteer updatedVolunteer) {
+        return volunteerRepository.save(updatedVolunteer);
+    }
+
+    public void deleteVolunteer(Volunteer deleteVolunteer) {
+        volunteerRepository.delete(deleteVolunteer);
+    }
+
 }

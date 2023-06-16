@@ -1,10 +1,15 @@
 package edu.group5.petshelterbot.entity;
 
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "volunteers")
 public class Volunteer {
     @Id
@@ -13,9 +18,6 @@ public class Volunteer {
     private String name;
     private long tgUserId;
     private String shelterTableName;
-
-    public Volunteer() {
-    }
 
     public Volunteer(String name, String shelterTableName, long tgUserId) {
         this.name = name;

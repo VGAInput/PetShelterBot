@@ -24,11 +24,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     @Autowired
     private final TelegramBot tgBot;
+
+
     private final DogService dogService;
     private final CatService catService;
     private final VolunteerService volunteerService;
     private ShelterTopic shelterTopic = ShelterTopic.NOT_PICKED;
-
 
     public TelegramBotUpdatesListener(TelegramBot tgBot, DogService dogService,
                                       CatService catService,
@@ -44,6 +45,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         tgBot.setUpdatesListener(this);
     }
 
+    /**
+     * Метод для чтения и распознования команд боту.
+     * Список команд, меню и кнопок: {@link BotCommands}
+     *
+     * @param updates
+     * @return
+     */
     @Override
     public int process(List<Update> updates) {
         updates.stream().filter(update -> update.message() != null).forEach(update -> {
@@ -54,71 +62,64 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             String text = msg.text();
             String addressForVolunteer = "[" + msg.from().username() + "](tg://user?id=" + msg.from().id() + ")";
 
-
-            /**
-             * Методы ответа бота идут сюда
-             */
-
             switch (text) {
-                // МЕНЮ ВЫБОРА ПРИЮТА
-                case "/start": {
+                case BotCommands.START: {
                     shelterTopic = ShelterTopic.NOT_PICKED;
                     sendOptions(chatId,
                             "Приветствую, " + msg.chat().firstName() + "! Выберите приют для животных."
-                            , startMarkup);
+                            , BotCommands.startMarkup);
                 }
                 break;
-                case "Приют для кошек.": {
+                case BotCommands.PICK_SHELTER_CATS: {
                     shelterTopic = ShelterTopic.CATS;
-                    sendOptions(chatId, "Приют для кошек. Опции бота:", mainMenuMarkup);
+                    sendOptions(chatId, "Приют для кошек. Опции бота:", BotCommands.mainMenuMarkup);
                 }
                 break;
-                case "Приют для собак.": {
+                case BotCommands.PICK_SHELTER_DOGS: {
                     shelterTopic = ShelterTopic.DOGS;
-                    sendOptions(chatId, "Приют для собак. Опции бота:", mainMenuMarkup);
+                    sendOptions(chatId, "Приют для собак. Опции бота:", BotCommands.mainMenuMarkup);
                 }
                 break;
-                // ОПЦИИ ДЛЯ ОСНОВНОГО МЕНЮ.
-                case "Информация о приюте": {
+                case BotCommands.SHELTER_INFORMATION: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Информция о приюте для котов", rebootMarkup);
+                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.rebootMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Информция о приюте для собак", rebootMarkup);
+                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.rebootMarkup);
                         }
                     }
                 }
                 break;
-                case "Как приютить питомца?": {
+                case BotCommands.HOW_TO_ADOPT_A_PET: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Информция о том как приютить кота", rebootMarkup);
+                            sendOptions(chatId, "Информция о том как приютить кота", BotCommands.rebootMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Информция о том как приютить собаку", rebootMarkup);
+                            sendOptions(chatId, "Информция о том как приютить собаку", BotCommands.rebootMarkup);
                         }
                     }
                 }
                 break;
-                case "Отправить отчёт о питомце": {
+                case BotCommands.SEND_PET_REPORT: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Информция о том как отправить отчёт о коте", rebootMarkup);
+                            sendOptions(chatId, "Информция о том как отправить отчёт о коте", BotCommands.rebootMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Информция о том как отправить отчёт о собаке", rebootMarkup);
+                            sendOptions(chatId, "Информция о том как отправить отчёт о собаке", BotCommands.rebootMarkup);
                         }
                     }
                 }
                 break;
-                case "Вызвать волонтёра": {
+                case BotCommands.CALL_VOLUNTEER: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Одному из волонтёров кошачьего приюта отправлено сообщение, ждите ответа.", rebootMarkup);
+                            sendOptions(chatId, "Одному из волонтёров кошачьего приюта отправлено сообщение, ждите ответа.", BotCommands.rebootMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Одному из волонтёров собачьего приюта отправлено сообщение, ждите ответа.", rebootMarkup);
+                            sendOptions(chatId, "Одному из волонтёров собачьего приюта отправлено сообщение, ждите ответа.", BotCommands.rebootMarkup);
                         }
                     }
                 }
@@ -133,9 +134,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         "просить волонтёра на помощь.");
             }
             {
-                /*
-                // Функция добавить пользователя как волонтёра
-                */
+                /**
+                 * Функция добавить пользователя как волонтёра
+                 * Аккаунт пользователя телеграма будет добавлен в БД как волонтёр
+                 * определённоого приюта {@link Volunteer}. Одному из волонтёру будет отправлено сообщение,
+                 * что другому пользователю бота нужна помощь.
+                 */
 
                 if ("/volunteer_dog".equals(text)) {
                     if (volunteerService.checkVolunteerExists("dogShelter", msg.from().id())) {
@@ -171,17 +175,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         SendResponse sendResponse = tgBot.execute(sendMenu);
         if (!sendResponse.isOk()) logger.error("ERROR SENDING MESSAGE: {}", sendResponse.description());
     }
+
     private void sendMessageToVolunteer(Long chatId, String message) {
         SendMessage sendMessage = new SendMessage(chatId, message);
         sendMessage.parseMode(ParseMode.Markdown);
         SendResponse sendResponse = tgBot.execute(sendMessage);
         if (!sendResponse.isOk()) logger.error("ERROR SENDING MESSAGE: {}", sendResponse.description());
     }
-
-    ReplyKeyboardMarkup rebootMarkup = new ReplyKeyboardMarkup(new String[]{"/start"});
-    ReplyKeyboardMarkup startMarkup = new ReplyKeyboardMarkup(new String[]{"Приют для кошек.", "Приют для собак."});
-    ReplyKeyboardMarkup mainMenuMarkup = new ReplyKeyboardMarkup(new String[]{
-            "Информация о приюте", "Как приютить питомца?", "Отправить отчёт о питомце"},
-            new String[]{"Вызвать волонтёра"});
 
 }
