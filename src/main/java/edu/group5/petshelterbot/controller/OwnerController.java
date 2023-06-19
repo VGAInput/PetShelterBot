@@ -26,7 +26,6 @@ import java.util.List;
 public class OwnerController {
     private OwnerService ownerService;
 
-    @Autowired
     public OwnerController(OwnerService ownerService) {
         this.ownerService = ownerService;
     }
@@ -61,14 +60,14 @@ public class OwnerController {
         return ResponseEntity.ok(Owners);
     }
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     @Operation(description = "Редактирование параметров пользователя")
-    public Owner putOwner(@RequestBody Owner owner, @PathVariable long id) {
+    public Owner putOwner(@RequestBody Owner owner, @PathVariable long id) throws Exception {
         Owner updatedOwner = ownerService.updateOwner(owner);
         return owner;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Operation(description = "Удаление пользователя по ID.")
     @Parameters(value = {
             @Parameter(name = "id", example = "1")

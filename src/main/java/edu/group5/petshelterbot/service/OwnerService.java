@@ -1,15 +1,11 @@
 package edu.group5.petshelterbot.service;
 
+import edu.group5.petshelterbot.entity.Dog;
 import edu.group5.petshelterbot.entity.Owner;
-import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.repository.OwnerRepository;
-import edu.group5.petshelterbot.repository.VolunteerRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 /**
  * Сервис для (потенциальных) владельцев
@@ -17,7 +13,6 @@ import java.util.Set;
 @Service
 public class OwnerService {
     private final OwnerRepository ownerRepository;
-    private Set<Owner> owners = new HashSet<>();
 
     public OwnerService(OwnerRepository ownerRepository) {
         this.ownerRepository = ownerRepository;
@@ -35,9 +30,15 @@ public class OwnerService {
         return ownerRepository.findAll();
     }
 
-    public Owner updateOwner(Owner updatedOwner) {
-        return ownerRepository.save(updatedOwner);
+    public Owner updateOwner(Owner owner) throws Exception {
+        if (ownerRepository.existsById(owner.getId())) {
+            Owner updatedOwner = ownerRepository.save(owner);
+            return updatedOwner;
+        } else {
+            throw new Exception("Этот владелец не найден в базе данных.");
+        }
     }
+
 
     public void deleteOwner(Owner deleteOwner) {
         ownerRepository.delete(deleteOwner);

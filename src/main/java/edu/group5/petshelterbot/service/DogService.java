@@ -1,9 +1,8 @@
 package edu.group5.petshelterbot.service;
 
+import edu.group5.petshelterbot.entity.Cat;
 import edu.group5.petshelterbot.entity.Dog;
-import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.repository.DogRepository;
-import liquibase.pro.packaged.D;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,8 +27,13 @@ public class DogService {
         return dogRepository.findAll();
     }
 
-    public Dog updateDog(Dog updatedDog) {
-        return dogRepository.save(updatedDog);
+    public Dog updateDog(Dog dog) throws Exception {
+        if (dogRepository.existsById(dog.getId())) {
+            Dog updatedDog = dogRepository.save(dog);
+            return updatedDog;
+        } else {
+            throw new Exception("Этот пёс не найден в базе данных.");
+        }
     }
 
     public void deleteDog(Dog deleteDog) {

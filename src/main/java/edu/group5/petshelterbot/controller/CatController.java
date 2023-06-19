@@ -24,7 +24,6 @@ import java.util.List;
 public class CatController {
     private CatService catService;
 
-    @Autowired
     public CatController(CatService сatService) {
         this.catService = сatService;
     }
@@ -58,14 +57,14 @@ public class CatController {
         return ResponseEntity.ok(cats);
     }
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     @Operation(description = "Редактирование параметров кошки по ID")
-    public Cat putCat(@RequestBody Cat cat, @PathVariable long id) {
+    public Cat putCat(@RequestBody Cat cat, @PathVariable long id) throws Exception {
         Cat updatedCat = catService.updateCat(cat);
         return cat;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Operation(description = "Удаление кошки из списка по ID.")
     @Parameters(value = {
             @Parameter(name = "id", example = "1")

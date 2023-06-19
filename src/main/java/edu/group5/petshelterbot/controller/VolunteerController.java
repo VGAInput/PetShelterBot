@@ -26,7 +26,6 @@ import java.util.Map;
 public class VolunteerController {
     private VolunteerService volunteerService;
 
-    @Autowired
     public VolunteerController(VolunteerService volunteerService) {
         this.volunteerService = volunteerService;
     }
@@ -61,14 +60,14 @@ public class VolunteerController {
         return ResponseEntity.ok(volunteers);
     }
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     @Operation(description = "Редактирование параметров волонтёра по ID")
-    public Volunteer putVolunteer(@RequestBody Volunteer volunteer, @PathVariable long id) {
+    public Volunteer putVolunteer(@RequestBody Volunteer volunteer, @PathVariable long id) throws Exception {
         Volunteer updatedVolunteer = volunteerService.updateVolunteer(volunteer);
         return volunteer;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Operation(description = "Удаление волонтёра по ID.")
     @Parameters(value = {
             @Parameter(name = "id", example = "1")
