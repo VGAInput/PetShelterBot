@@ -22,6 +22,12 @@ import java.util.List;
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+    private static final String CAT_SHELTER_ADDRESS = "улица Сарайшык, дом 5, Астана";
+    private static final String DOG_SHELTER_ADDRESS = "улица Ханов Керея и Жанибека, дом 4, Астана";
+    private static final String CAT_SHELTER_TIMETABLE = "пн-пт  10:00 - 22:00\nсб-вс 11:00 - 21:00";
+    private static final String DOG_SHELTER_TIMETABLE = "пн-пт  9:00 - 21:00\nсб-вс 10:00 - 21:00";
+    private static final String ASK_CAR_NUMBER = "Хорошо! Введите номер машины:";
+
     @Autowired
     private final TelegramBot tgBot;
 
@@ -30,6 +36,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final CatService catService;
     private final VolunteerService volunteerService;
     private ShelterTopic shelterTopic = ShelterTopic.NOT_PICKED;
+    private boolean waitingCarNumber;
+    private boolean waitingTelephoneNumber;
 
     public TelegramBotUpdatesListener(TelegramBot tgBot, DogService dogService,
                                       CatService catService,
@@ -38,6 +46,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         this.catService = catService;
         this.volunteerService = volunteerService;
         this.tgBot = tgBot;
+        this.waitingCarNumber = false;
+        this.waitingTelephoneNumber = false;
     }
 
     @PostConstruct
@@ -83,10 +93,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 case BotCommands.SHELTER_INFORMATION: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.rebootMarkup);
+                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.shelterMenuMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.rebootMarkup);
+                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.shelterMenuMarkup);
                         }
                     }
                 }
@@ -124,14 +134,41 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     }
                 }
                 break;
-
-
+                case BotCommands.SHELTER_ADDRESS: {
+                    switch (shelterTopic) {
+                        case CATS -> {
+                            sendOptions(chatId, "Адрес приюта:\n\n" + CAT_SHELTER_ADDRESS, BotCommands.shelterMenuMarkup);
+                        }
+                        case DOGS -> {
+                            sendOptions(chatId, "Адрес приюта:\n\n" + DOG_SHELTER_ADDRESS, BotCommands.shelterMenuMarkup);
+                        }
+                    }
+                }
+                break;
+                case BotCommands.SHELTER_TIMETABLE: {
+                    switch (shelterTopic) {
+                        case CATS -> {
+                            sendOptions(chatId, "График работы приюта:\n\n" + CAT_SHELTER_TIMETABLE, BotCommands.shelterMenuMarkup);
+                        }
+                        case DOGS -> {
+                            sendOptions(chatId, "График работы приюта:\n\n" + DOG_SHELTER_TIMETABLE, BotCommands.shelterMenuMarkup);
+                        }
+                    }
+                }
+                break;
+                case BotCommands.CAR_PASS: {
+                    sendMessage(chatId, ASK_CAR_NUMBER);
+                    waitingCarNumber = true;
+                }
+                break;
             }
 
 
             if ("/test".equals(text)) {
-                sendMessageToVolunteer(volunteerService.getRandomVolunteer("dogshelter"), addressForVolunteer + " " +
-                        "просить волонтёра на помощь.");
+//                sendMessageToVolunteer(volunteerService.getRandomVolunteer("dogshelter"), addressForVolunteer + " " +
+//                        "просить волонтёра на помощь.");
+            } else if (text != null && waitingCarNumber) {
+
             }
             {
                 /**
