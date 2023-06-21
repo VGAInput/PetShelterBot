@@ -1,11 +1,14 @@
 package edu.group5.petshelterbot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import liquibase.pro.packaged.A;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
-
+@Data
+@NoArgsConstructor
 @MappedSuperclass
 public abstract class Pet {
     @Id
@@ -16,15 +19,17 @@ public abstract class Pet {
     private String breed;
     private String sex;
     private boolean isSterilized;
-    public Pet() {
-    }
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(name = "owner")
+    private Owner owner;
 
-    public Pet(String name, int age, String breed, String sex, boolean isSterilized) {
+    public Pet(String name, int age, String breed, String sex, boolean isSterilized,Owner owner) {
         this.name = name;
         this.age = age;
         this.breed = breed;
         this.sex = sex;
         this.isSterilized = isSterilized;
+        this.owner = owner;
     }
 
     @Override
@@ -32,11 +37,13 @@ public abstract class Pet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pet pet = (Pet) o;
-        return id == pet.id && age == pet.age && isSterilized == pet.isSterilized && Objects.equals(name, pet.name) && Objects.equals(breed, pet.breed) && Objects.equals(sex, pet.sex);
+        return id == pet.id && age == pet.age && isSterilized == pet.isSterilized
+                && Objects.equals(name, pet.name) && Objects.equals(breed, pet.breed)
+                && Objects.equals(sex, pet.sex)&& Objects.equals(owner, pet.owner);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, age, breed, sex, isSterilized);
+        return Objects.hash(id, name, age, breed, sex, isSterilized,owner);
     }
 }
