@@ -15,4 +15,6 @@ public abstract class Owner {
     private long id;
     private long tgUserId;
     private String name;
+    private String telephoneNumber;
+    private String carNumber;
 }
