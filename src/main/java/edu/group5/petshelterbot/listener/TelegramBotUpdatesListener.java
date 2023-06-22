@@ -7,9 +7,11 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
+import edu.group5.petshelterbot.entity.Owner;
 import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.service.CatService;
 import edu.group5.petshelterbot.service.DogService;
+import edu.group5.petshelterbot.service.OwnerService;
 import edu.group5.petshelterbot.service.VolunteerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
@@ -26,7 +29,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final String DOG_SHELTER_ADDRESS = "улица Ханов Керея и Жанибека, дом 4, Астана";
     private static final String CAT_SHELTER_TIMETABLE = "пн-пт  10:00 - 22:00\nсб-вс 11:00 - 21:00";
     private static final String DOG_SHELTER_TIMETABLE = "пн-пт  9:00 - 21:00\nсб-вс 10:00 - 21:00";
-    private static final String ASK_CAR_NUMBER = "Хорошо! Введите номер машины:";
+    private static final String CAT_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
+            "+7(617)255-34-34";
+    private static final String DOG_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
+            "+7(625)313-78-56";
 
     @Autowired
     private final TelegramBot tgBot;
@@ -35,19 +41,17 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final DogService dogService;
     private final CatService catService;
     private final VolunteerService volunteerService;
+    private final OwnerService ownerService;
     private ShelterTopic shelterTopic = ShelterTopic.NOT_PICKED;
-    private boolean waitingCarNumber;
-    private boolean waitingTelephoneNumber;
 
     public TelegramBotUpdatesListener(TelegramBot tgBot, DogService dogService,
                                       CatService catService,
-                                      VolunteerService volunteerService) {
+                                      VolunteerService volunteerService, OwnerService ownerService) {
         this.dogService = dogService;
         this.catService = catService;
         this.volunteerService = volunteerService;
         this.tgBot = tgBot;
-        this.waitingCarNumber = false;
-        this.waitingTelephoneNumber = false;
+        this.ownerService = ownerService;
     }
 
     @PostConstruct
@@ -69,6 +73,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message msg = update.message();
 
             Long chatId = msg.chat().id();
+            Long tgUserId = msg.from().id();
             String text = msg.text();
             String addressForVolunteer = "[" + msg.from().username() + "](tg://user?id=" + msg.from().id() + ")";
 
@@ -157,18 +162,22 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
                 break;
                 case BotCommands.CAR_PASS: {
-                    sendMessage(chatId, ASK_CAR_NUMBER);
-                    waitingCarNumber = true;
+                    switch (shelterTopic) {
+                        case CATS -> {
+                            sendOptions(chatId, CAT_SHELTER_SECURITY_NUMBER, BotCommands.shelterMenuMarkup);
+                        }
+                        case DOGS -> {
+                            sendOptions(chatId, DOG_SHELTER_SECURITY_NUMBER, BotCommands.shelterMenuMarkup);
+                        }
+                    }
                 }
                 break;
             }
 
 
             if ("/test".equals(text)) {
-//                sendMessageToVolunteer(volunteerService.getRandomVolunteer("dogshelter"), addressForVolunteer + " " +
-//                        "просить волонтёра на помощь.");
-            } else if (text != null && waitingCarNumber) {
-
+                sendMessageToVolunteer(volunteerService.getRandomVolunteer("dogshelter"), addressForVolunteer + " " +
+                        "просить волонтёра на помощь.");
             }
             {
                 /**
