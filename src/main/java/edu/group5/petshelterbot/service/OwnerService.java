@@ -25,6 +25,9 @@ public class OwnerService {
     public Owner getOwnerByID(long id) {
         return ownerRepository.findOwnersById(id);
     }
+    public Owner getOwnerByTgUserId(long userId) {
+        return ownerRepository.findOwnerByTgUserId(userId);
+    }
 
     public List<Owner> getAllOwners() {
         return ownerRepository.findAll();

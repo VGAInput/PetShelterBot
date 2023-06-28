@@ -7,9 +7,11 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
+import edu.group5.petshelterbot.entity.Owner;
 import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.service.CatService;
 import edu.group5.petshelterbot.service.DogService;
+import edu.group5.petshelterbot.service.OwnerService;
 import edu.group5.petshelterbot.service.VolunteerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +20,20 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+    private static final String CAT_SHELTER_ADDRESS = "улица Сарайшык, дом 5, Астана";
+    private static final String DOG_SHELTER_ADDRESS = "улица Ханов Керея и Жанибека, дом 4, Астана";
+    private static final String CAT_SHELTER_TIMETABLE = "пн-пт  10:00 - 22:00\nсб-вс 11:00 - 21:00";
+    private static final String DOG_SHELTER_TIMETABLE = "пн-пт  9:00 - 21:00\nсб-вс 10:00 - 21:00";
+    private static final String CAT_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
+            "+7(617)255-34-34";
+    private static final String DOG_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
+            "+7(625)313-78-56";
+
     @Autowired
     private final TelegramBot tgBot;
 
@@ -29,15 +41,17 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final DogService dogService;
     private final CatService catService;
     private final VolunteerService volunteerService;
+    private final OwnerService ownerService;
     private ShelterTopic shelterTopic = ShelterTopic.NOT_PICKED;
 
     public TelegramBotUpdatesListener(TelegramBot tgBot, DogService dogService,
                                       CatService catService,
-                                      VolunteerService volunteerService) {
+                                      VolunteerService volunteerService, OwnerService ownerService) {
         this.dogService = dogService;
         this.catService = catService;
         this.volunteerService = volunteerService;
         this.tgBot = tgBot;
+        this.ownerService = ownerService;
     }
 
     @PostConstruct
@@ -59,6 +73,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message msg = update.message();
 
             Long chatId = msg.chat().id();
+            Long tgUserId = msg.from().id();
             String text = msg.text();
             String addressForVolunteer = "[" + msg.from().username() + "](tg://user?id=" + msg.from().id() + ")";
 
@@ -83,10 +98,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 case BotCommands.SHELTER_INFORMATION: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.rebootMarkup);
+                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.shelterMenuMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.rebootMarkup);
+                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.shelterMenuMarkup);
                         }
                     }
                 }
@@ -124,8 +139,39 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     }
                 }
                 break;
-
-
+                case BotCommands.SHELTER_ADDRESS: {
+                    switch (shelterTopic) {
+                        case CATS -> {
+                            sendOptions(chatId, "Адрес приюта:\n\n" + CAT_SHELTER_ADDRESS, BotCommands.shelterMenuMarkup);
+                        }
+                        case DOGS -> {
+                            sendOptions(chatId, "Адрес приюта:\n\n" + DOG_SHELTER_ADDRESS, BotCommands.shelterMenuMarkup);
+                        }
+                    }
+                }
+                break;
+                case BotCommands.SHELTER_TIMETABLE: {
+                    switch (shelterTopic) {
+                        case CATS -> {
+                            sendOptions(chatId, "График работы приюта:\n\n" + CAT_SHELTER_TIMETABLE, BotCommands.shelterMenuMarkup);
+                        }
+                        case DOGS -> {
+                            sendOptions(chatId, "График работы приюта:\n\n" + DOG_SHELTER_TIMETABLE, BotCommands.shelterMenuMarkup);
+                        }
+                    }
+                }
+                break;
+                case BotCommands.CAR_PASS: {
+                    switch (shelterTopic) {
+                        case CATS -> {
+                            sendOptions(chatId, CAT_SHELTER_SECURITY_NUMBER, BotCommands.shelterMenuMarkup);
+                        }
+                        case DOGS -> {
+                            sendOptions(chatId, DOG_SHELTER_SECURITY_NUMBER, BotCommands.shelterMenuMarkup);
+                        }
+                    }
+                }
+                break;
             }
 
 
