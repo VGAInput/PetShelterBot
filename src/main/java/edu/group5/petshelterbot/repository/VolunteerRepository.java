@@ -10,6 +10,7 @@ import java.util.List;
 public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     List<Volunteer> findVolunteersByShelterTableName(String shelterName);
+    
     Volunteer findVolunteersById(long id);
     boolean existsByShelterTableNameAndTgUserId(String shelterTableName,long tgUserId);
     @Query(value = "SELECT v.tg_user_id FROM volunteers v WHERE v.shelter_table_name = ?1",nativeQuery = true)

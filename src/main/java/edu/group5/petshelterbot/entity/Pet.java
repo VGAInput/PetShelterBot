@@ -10,7 +10,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class Pet<T> {
+public abstract class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -19,7 +19,8 @@ public abstract class Pet<T> {
     private String breed;
     private String sex;
     private boolean isSterilized;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(name = "owner")
     private Owner owner;
 
     public Pet(String name, int age, String breed, String sex, boolean isSterilized,Owner owner) {

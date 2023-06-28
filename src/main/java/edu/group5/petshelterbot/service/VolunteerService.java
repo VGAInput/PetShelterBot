@@ -1,5 +1,6 @@
 package edu.group5.petshelterbot.service;
 
+import edu.group5.petshelterbot.entity.Owner;
 import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.repository.VolunteerRepository;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,13 @@ public class VolunteerService {
         return volunteerIds(shelterName).get(random.nextInt(volunteerIds(shelterName).size()));
     }
 
-    public Volunteer updateVolunteer(Volunteer updatedVolunteer) {
-        return volunteerRepository.save(updatedVolunteer);
+    public Volunteer updateVolunteer(Volunteer volunteer) throws Exception {
+        if (volunteerRepository.existsById(volunteer.getId())) {
+            Volunteer updatedVolunteer = volunteerRepository.save(volunteer);
+            return updatedVolunteer;
+        } else {
+            throw new Exception("Этот волонтёр не найден в базе данных.");
+        }
     }
 
     public void deleteVolunteer(Volunteer deleteVolunteer) {

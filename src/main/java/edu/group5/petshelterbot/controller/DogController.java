@@ -24,7 +24,6 @@ import java.util.List;
 public class DogController {
     private DogService dogService;
 
-    @Autowired
     public DogController(DogService dogService) {
         this.dogService = dogService;
     }
@@ -58,14 +57,14 @@ public class DogController {
         return ResponseEntity.ok(dogs);
     }
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     @Operation(description = "Редактирование параметров собаки по ID")
-    public Dog putDog(@RequestBody Dog dog, @PathVariable long id) {
+    public Dog putDog(@RequestBody Dog dog, @PathVariable long id)  throws Exception{
         Dog updatedDog = dogService.updateDog(dog);
         return dog;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Operation(description = "Удаление собаки из списка по ID.")
     @Parameters(value = {
             @Parameter(name = "id", example = "1")
