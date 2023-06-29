@@ -14,6 +14,10 @@ public class BotCommands {
     public static final String HOW_TO_ADOPT_A_PET = "Как приютить питомца?";
     public static final String SEND_PET_REPORT = "Отправить отчёт о питомце";
     public static final String CALL_VOLUNTEER = "Вызвать волонтёра";
+    public static final String SHELTER_ADDRESS = "Адрес";
+    public static final String SHELTER_TIMETABLE = "График работы";
+    public static final String CAR_PASS = "Оформить пропуск на машину";
+    public static final String SAFETY_PRECAUTIONS = "Общие рекомендации";
 
     /**
      * меню с ответами, которые предоставляет бот - используется в слушателе  {@link TelegramBotUpdatesListener}.
@@ -23,6 +27,7 @@ public class BotCommands {
     public static final ReplyKeyboardMarkup mainMenuMarkup = new ReplyKeyboardMarkup(new String[]{
             SHELTER_INFORMATION, HOW_TO_ADOPT_A_PET, SEND_PET_REPORT},
             new String[]{CALL_VOLUNTEER});
-
-
+    public static final ReplyKeyboardMarkup shelterMenuMarkup = new ReplyKeyboardMarkup(new String[]{
+            SHELTER_ADDRESS, SHELTER_TIMETABLE, SAFETY_PRECAUTIONS},
+            new String[]{CAR_PASS});
 }

@@ -21,6 +21,9 @@ public class Owner {
     private long id;
     private long tgUserId;
     private String name;
+  
+    private String telephoneNumber;
+    private String carNumber;
 
     public Owner(long tgUserId, String name) {
         this.tgUserId = tgUserId;
