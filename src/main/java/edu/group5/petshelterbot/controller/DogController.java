@@ -3,6 +3,7 @@ package edu.group5.petshelterbot.controller;
 
 import edu.group5.petshelterbot.entity.Dog;
 import edu.group5.petshelterbot.service.DogService;
+import edu.group5.petshelterbot.service.OwnerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -23,9 +24,11 @@ import java.util.List;
 @Tag(name = "Контролёр работы с базой данных собачьего приюта.")
 public class DogController {
     private DogService dogService;
+    private OwnerService ownerService;
 
-    public DogController(DogService dogService) {
+    public DogController(DogService dogService,OwnerService ownerService) {
         this.dogService = dogService;
+        this.ownerService = ownerService;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -63,6 +66,29 @@ public class DogController {
         Dog updatedDog = dogService.updateDog(dog);
         return dog;
     }
+
+
+
+    @PutMapping("/{owner_id}/{dog_id}")
+    @Operation(description = "Установка владельца собаки, где первое условие - id нового владельца из таблицы owners, а второе - id собаки" +
+            ".")
+    public ResponseEntity<String> putDogOwner(@RequestParam long owner_id, long dog_id) {
+        dogService.setDogOwner(owner_id, dog_id);
+        return ResponseEntity.ok("Собака " + dogService.getDogByID(dog_id).getName() + " под id " + dog_id + "" +
+                " теперь с владельцем " + ownerService.getOwnerByID(owner_id).getName() + " под id " + owner_id);
+    }
+
+
+    @DeleteMapping("/deleteOwner/{id}")
+    @Operation(description = "Установка владельца собаки как null, где условие - id собаки.")
+    public ResponseEntity<String> deleteCatOwner(@RequestParam long id) {
+        dogService.deleteOwnerId(id);
+        return ResponseEntity.ok("Собака " + dogService.getDogByID(id).getName() + " под id " + id +
+                " теперь не имеет владельца.");
+    }
+
+
+
 
     @DeleteMapping("/{id}")
     @Operation(description = "Удаление собаки из списка по ID.")

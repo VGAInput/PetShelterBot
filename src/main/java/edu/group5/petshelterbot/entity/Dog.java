@@ -9,11 +9,11 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "dogShelter")
+@Table(name = "dog_shelter")
 
 public class Dog extends Pet implements Serializable {
 
-    public Dog(String name, int age, String breed, String sex, boolean isSterilized, Owner owner) {
-        super(name, age, breed, sex, isSterilized, owner);
+    public Dog(String name, int age, String breed, String sex, boolean is_sterilized) {
+        super(name, age, breed, sex, is_sterilized);
     }
 }

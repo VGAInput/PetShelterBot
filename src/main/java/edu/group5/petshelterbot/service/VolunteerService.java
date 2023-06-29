@@ -1,6 +1,5 @@
 package edu.group5.petshelterbot.service;
 
-import edu.group5.petshelterbot.entity.Owner;
 import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.repository.VolunteerRepository;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class VolunteerService {
 
     //Получить список всех волонтёров из конкретного приюта.
     public List<Long> volunteerIds(String shelterName) {
-        return volunteerRepository.getVolunteersTelegramId(shelterName);
+        return volunteerRepository.getVolunteersFromShelter(shelterName);
     }
 
     //Выбрать случайного волонтёра из списка.

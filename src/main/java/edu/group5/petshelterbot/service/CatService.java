@@ -2,7 +2,7 @@ package edu.group5.petshelterbot.service;
 
 import edu.group5.petshelterbot.entity.Cat;
 import edu.group5.petshelterbot.repository.CatRepository;
-import org.hibernate.HibernateException;
+import liquibase.pro.packaged.C;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +38,13 @@ public class CatService {
 
     public void deleteCat(Cat deleteCat) {
         catRepository.delete(deleteCat);
+    }
+
+    public void setCatOwner(long ownerId, long catId) {
+        catRepository.setOwnerId(ownerId, catId);
+    }
+    public void deleteOwnerId(long catId) {
+        catRepository.deleteOwnerId(catId);
     }
 
 
