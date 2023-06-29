@@ -3,6 +3,7 @@ package edu.group5.petshelterbot.controller;
 
 import edu.group5.petshelterbot.entity.Cat;
 import edu.group5.petshelterbot.service.CatService;
+import edu.group5.petshelterbot.service.OwnerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -23,9 +24,12 @@ import java.util.List;
 @Tag(name = "Контролёр работы с базой данных кошачьего приюта.")
 public class CatController {
     private CatService catService;
+    private OwnerService ownerService;
 
-    public CatController(CatService сatService) {
+
+    public CatController(CatService сatService, OwnerService ownerService) {
         this.catService = сatService;
+        this.ownerService = ownerService;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -63,6 +67,25 @@ public class CatController {
         Cat updatedCat = catService.updateCat(cat);
         return cat;
     }
+
+    @PutMapping("/{owner_id}/{cat_id}")
+    @Operation(description = "Установка владельца кота, где первое условие - id нового владельца из таблицы owners, а второе - id " +
+            "кота.")
+    public ResponseEntity<String> putCatOwner(@RequestParam long owner_id, long cat_id) {
+        catService.setCatOwner(owner_id, cat_id);
+        return ResponseEntity.ok("Кошка " + catService.getCatByID(cat_id).getName() + " под id " + cat_id + "" +
+                " теперь с владельцем " + ownerService.getOwnerByID(owner_id).getName() + " под id " + owner_id);
+    }
+
+
+    @DeleteMapping("/deleteOwner/{id}")
+    @Operation(description = "Установка владельца кота как null, где условие - id кота.")
+    public ResponseEntity<String> deleteCatOwner(@RequestParam long id) {
+        catService.deleteOwnerId(id);
+        return ResponseEntity.ok("Кошка " + catService.getCatByID(id).getName() + " под id " + id +
+                " теперь не имеет владельца.");
+    }
+
 
     @DeleteMapping("/{id}")
     @Operation(description = "Удаление кошки из списка по ID.")

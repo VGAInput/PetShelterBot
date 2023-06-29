@@ -1,10 +1,11 @@
 -- liquibase formatted sql
+-- changeset set:1
 
 CREATE TABLE owners
 (
     id       SERIAL primary key,
-    tgUserId INTEGER     NOT NULL,
+    tg_user_id INTEGER     NOT NULL,
     name     VARCHAR(15) NOT NULL,
-    telephoneNumber varchar(25),
-    carNumber varchar(15);
+    telephone_number VARCHAR,
+    car_number VARCHAR
 );

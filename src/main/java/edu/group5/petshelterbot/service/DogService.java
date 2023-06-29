@@ -1,6 +1,5 @@
 package edu.group5.petshelterbot.service;
 
-import edu.group5.petshelterbot.entity.Cat;
 import edu.group5.petshelterbot.entity.Dog;
 import edu.group5.petshelterbot.repository.DogRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ public class DogService {
         return dogRepository.findDogsById(id);
     }
 
+
     public List<Dog> getAllDogs() {
         return dogRepository.findAll();
     }
@@ -40,5 +40,12 @@ public class DogService {
         dogRepository.delete(deleteDog);
     }
 
+    public void setDogOwner(long ownerId, long dogId) {
+        dogRepository.setOwnerId(ownerId, dogId);
+    }
+
+    public void deleteOwnerId(long dogId) {
+        dogRepository.deleteOwnerId(dogId);
+    }
 
 }
