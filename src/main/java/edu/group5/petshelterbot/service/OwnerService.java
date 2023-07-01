@@ -18,13 +18,16 @@ public class OwnerService {
         this.ownerRepository = ownerRepository;
     }
 
-    public Owner saveOwner(Owner owner) {
-        return ownerRepository.save(owner);
+    public Owner saveOwner(Owner owner) throws Exception {
+        if (!checkOwnerExistsByTgId(owner.getTgUserId())) {
+            return ownerRepository.save(owner);
+        } else throw new Exception("Пользователь уже существует.");
     }
 
     public Owner getOwnerByID(long id) {
         return ownerRepository.findOwnersById(id);
     }
+
     public Owner getOwnerByTgUserId(long userId) {
         return ownerRepository.findOwnerByTgUserId(userId);
     }
@@ -40,6 +43,14 @@ public class OwnerService {
         } else {
             throw new Exception("Этот владелец не найден в базе данных.");
         }
+    }
+
+    public boolean checkOwnerExists(long id) {
+        return ownerRepository.existsById(id);
+    }
+
+    public boolean checkOwnerExistsByTgId(long id) {
+        return ownerRepository.existsByTgUserId(id);
     }
 
 
