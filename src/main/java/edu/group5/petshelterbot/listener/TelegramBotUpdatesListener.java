@@ -25,18 +25,9 @@ import java.util.regex.Pattern;
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
-    private static final String CAT_SHELTER_ADDRESS = "улица Сарайшык, дом 5, Астана";
-    private static final String DOG_SHELTER_ADDRESS = "улица Ханов Керея и Жанибека, дом 4, Астана";
-    private static final String CAT_SHELTER_TIMETABLE = "пн-пт  10:00 - 22:00\nсб-вс 11:00 - 21:00";
-    private static final String DOG_SHELTER_TIMETABLE = "пн-пт  9:00 - 21:00\nсб-вс 10:00 - 21:00";
-    private static final String CAT_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
-            "+7(617)255-34-34";
-    private static final String DOG_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
-            "+7(625)313-78-56";
 
     @Autowired
     private final TelegramBot tgBot;
-
 
     private final DogService dogService;
     private final CatService catService;
@@ -73,12 +64,19 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message msg = update.message();
 
             Long chatId = msg.chat().id();
-            Long tgUserId = msg.from().id();
             String text = msg.text();
-            String addressForVolunteer = "[" + msg.from().username() + "](tg://user?id=" + msg.from().id() + ")";
+            String addressForVolunteer = "[" + msg.from().firstName() + "](tg://user?id=" + msg.from().id() + ")";
 
             switch (text) {
                 case BotCommands.START: {
+                    if (!ownerService.checkOwnerExists(msg.from().id())) {
+                        try {
+                            ownerService.saveOwner(new Owner(msg.from().id(), msg.from().firstName()));
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        sendMessage(chatId,"Приветствую! ваш аккаунт создан.");
+                    }
                     shelterTopic = ShelterTopic.NOT_PICKED;
                     sendOptions(chatId,
                             "Приветствую, " + msg.chat().firstName() + "! Выберите приют для животных."
@@ -95,18 +93,18 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     sendOptions(chatId, "Приют для собак. Опции бота:", BotCommands.mainMenuMarkup);
                 }
                 break;
-                case BotCommands.SHELTER_INFORMATION: {
+                case BotCommands.MAINMENU_SHELTER_INFORMATION: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, "Информция о приюте для котов", BotCommands.infoMenuMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, "Информция о приюте для собак", BotCommands.infoMenuMarkup);
                         }
                     }
                 }
                 break;
-                case BotCommands.HOW_TO_ADOPT_A_PET: {
+                case BotCommands.MAINMENU_HOW_TO_ADOPT_A_PET: {
                     switch (shelterTopic) {
                         case CATS -> {
                             sendOptions(chatId, "Информция о том как приютить кота", BotCommands.rebootMarkup);
@@ -117,7 +115,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     }
                 }
                 break;
-                case BotCommands.SEND_PET_REPORT: {
+                case BotCommands.MAINMENU_SEND_PET_REPORT: {
                     switch (shelterTopic) {
                         case CATS -> {
                             sendOptions(chatId, "Информция о том как отправить отчёт о коте", BotCommands.rebootMarkup);
@@ -132,46 +130,55 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     switch (shelterTopic) {
                         case CATS -> {
                             sendOptions(chatId, "Одному из волонтёров кошачьего приюта отправлено сообщение, ждите ответа.", BotCommands.rebootMarkup);
+                            sendMessageToVolunteer(volunteerService.getRandomVolunteer("cat_shelter"), addressForVolunteer + " " +
+                                    "просить волонтёра на помощь.");
                         }
                         case DOGS -> {
                             sendOptions(chatId, "Одному из волонтёров собачьего приюта отправлено сообщение, ждите ответа.", BotCommands.rebootMarkup);
+                            sendMessageToVolunteer(volunteerService.getRandomVolunteer("dog_shelter"), addressForVolunteer + " " +
+                                    "просить волонтёра на помощь.");
                         }
                     }
                 }
                 break;
-                case BotCommands.SHELTER_ADDRESS: {
+                case BotCommands.INFO_SHELTER_ADDRESS: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "Адрес приюта:\n\n" + CAT_SHELTER_ADDRESS, BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, "Адрес приюта:\n\n" + BotCommands.R_CAT_SHELTER_ADDRESS, BotCommands.infoMenuMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "Адрес приюта:\n\n" + DOG_SHELTER_ADDRESS, BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, "Адрес приюта:\n\n" + BotCommands.R_DOG_SHELTER_ADDRESS, BotCommands.infoMenuMarkup);
                         }
                     }
                 }
                 break;
-                case BotCommands.SHELTER_TIMETABLE: {
+                case BotCommands.INFO_SHELTER_TIMETABLE: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, "График работы приюта:\n\n" + CAT_SHELTER_TIMETABLE, BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, "График работы приюта:\n\n" + BotCommands.R_CAT_SHELTER_TIMETABLE, BotCommands.infoMenuMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, "График работы приюта:\n\n" + DOG_SHELTER_TIMETABLE, BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, "График работы приюта:\n\n" + BotCommands.R_DOG_SHELTER_TIMETABLE, BotCommands.infoMenuMarkup);
                         }
                     }
                 }
                 break;
-                case BotCommands.CAR_PASS: {
+                case BotCommands.INFO_CAR_PASS: {
                     switch (shelterTopic) {
                         case CATS -> {
-                            sendOptions(chatId, CAT_SHELTER_SECURITY_NUMBER, BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, BotCommands.R_CAT_SHELTER_SECURITY_NUMBER, BotCommands.infoMenuMarkup);
                         }
                         case DOGS -> {
-                            sendOptions(chatId, DOG_SHELTER_SECURITY_NUMBER, BotCommands.shelterMenuMarkup);
+                            sendOptions(chatId, BotCommands.R_DOG_SHELTER_SECURITY_NUMBER, BotCommands.infoMenuMarkup);
                         }
                     }
                 }
                 break;
+                case BotCommands.INFO_SAFETY_PRECAUTIONS: {
+                    sendOptions(chatId, BotCommands.R_SAFETY_RULES, BotCommands.infoMenuMarkup);
+                }
+                break;
+
             }
 
 
