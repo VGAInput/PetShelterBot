@@ -5,6 +5,8 @@ import edu.group5.petshelterbot.repository.CatRepository;
 import liquibase.pro.packaged.C;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -41,11 +43,23 @@ public class CatService {
     }
 
     public void setCatOwner(long ownerId, long catId) {
+        Calendar trialDate = Calendar.getInstance();
+        trialDate.add(Calendar.DATE, 30);
+        catRepository.setOwnerTrialDate(trialDate.getTime(), catId);
         catRepository.setOwnerId(ownerId, catId);
     }
-    public void deleteOwnerId(long catId) {
-        catRepository.deleteOwnerId(catId);
+    public void addDaysToTrialDate(int extraDays, long dogId) {
+        Calendar trialDate = Calendar.getInstance();
+        trialDate.add(Calendar.DATE, extraDays);
+        catRepository.setOwnerTrialDate(trialDate.getTime(), dogId);
     }
 
+    public Date getTrialDate(long id){
+        return catRepository.getTrialDate(id);
+    }
 
+    public void deleteOwnerId(long catId) {
+        catRepository.deleteOwnerTrialDate(catId);
+        catRepository.deleteOwnerId(catId);
+    }
 }

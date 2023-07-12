@@ -1,6 +1,6 @@
 package edu.group5.petshelterbot.listener;
 
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 
 
 /**
@@ -11,10 +11,10 @@ public class BotCommands {
     /**
      * КОМАНДЫ ДЛЯ БОТА С ПРИСТАВКАМИ:
      * =================================
-     *      MAINMENU_ - команды для основного меню.
-     *      INFO_ - команды ветки "Информация о приюте".
-     *      ADOPT_ - команды ветки "Как приютить питомца?".
-     *      REPORT_ - команды ветки "Отправить отчёт о питомце".
+     * MAINMENU_ - команды для основного меню.
+     * INFO_ - команды ветки "Информация о приюте".
+     * ADOPT_ - команды ветки "Как приютить питомца?".
+     * REPORT_ - команды ветки "Отправить отчёт о питомце".
      */
     public static final String START = "/start";
 
@@ -22,6 +22,7 @@ public class BotCommands {
     public static final String PICK_SHELTER_DOGS = "Приют для собак";
 
     public static final String MAINMENU_SHELTER_INFORMATION = "Информация о приюте";
+    public static final String RETURN_MAINMENU = "В главное меню.";
     public static final String MAINMENU_HOW_TO_ADOPT_A_PET = "Как приютить питомца?";
     public static final String MAINMENU_SEND_PET_REPORT = "Отправить отчёт о питомце";
     public static final String MAINMENU_CHANGE_SHELTER = "Вернуться к выбору приюта";
@@ -33,13 +34,25 @@ public class BotCommands {
     public static final String INFO_SAFETY_PRECAUTIONS = "Общие рекомендации";
     public static final String INFO_LEAVE_CONTACTS = "Оставить телефонный номер для связи.";
 
+    public static final String ADOPT_HOW_TO_MEET_PET = "Правила знакомства с животным";
+    public static final String ADOPT_REQUIRED_DOCUMENTS = "Необходимые документы";
+    public static final String ADOPT_RECOMENDATIONS_MENU = "Список рекомендаций:";
+    public static final String ADOPT_RECOMENDATIONS_TRANSPORT = "Рекомендации по транспортировке";
+    public static final String ADOPT_RECOMENDATIONS_HOUSE_YOUNG = "Обустройство дома для щенка/котенка";
+    public static final String ADOPT_RECOMENDATIONS_HOUSE_ADULT = "Обустройство дома для взрослого животного";
+    public static final String ADOPT_RECOMENDATIONS_HOUSE_DISABLED = "Обустройство дома для животного с ограниченными возможностями";
+    public static final String ADOPT_DOG_PROTIPS = "Советы кинологов:";
+    public static final String ADOPT_REASONS_WHY_MAY_BE_DENIED = "Возможные причины отказа";
+    public static final String ADOPT_LEAVE_CONTACTS = "Оставить телефонный номер";
+
+
     /**
      * Строки ответов, которые предоставляет бот:
-     *
-     *      R_ - (response) приставка строки как ответ бота .
-     *
+     * <p>
+     * R_ - (response) приставка строки как ответ бота .
      */
     public static final String R_CAT_SHELTER_ADDRESS = "улица Сарайшык, дом 5, Астана";
+    public static final String R_TYPE_IN_YOUR_NUMBER = "Введите свой телефонный номер (без текста).";
     public static final String R_DOG_SHELTER_ADDRESS = "улица Ханов Керея и Жанибека, дом 4, Астана";
     public static final String R_CAT_SHELTER_TIMETABLE = "пн-пт  10:00 - 22:00\nсб-вс 11:00 - 21:00";
     public static final String R_DOG_SHELTER_TIMETABLE = "пн-пт  9:00 - 21:00\nсб-вс 10:00 - 21:00";
@@ -48,7 +61,7 @@ public class BotCommands {
     public static final String R_DOG_SHELTER_SECURITY_NUMBER = "Для оформления пропуска на машину необходимо связаться с охраной клиники по номеру:\n" +
             "+7(625)313-78-56";
     public static final String R_SAFETY_RULES =
-            "— обувь должна быть на подошве, исключающей непроизвольное скольжение;\n" +
+            "   — Обувь должна быть на подошве, исключающей непроизвольное скольжение;\n" +
                     "\n" +
                     "— верхняя одежда должна соответствовать погоде, исключать промокание, а также должна быть облегающей и исключать возможность непроизвольных зацепов за ограждения, строения и иные конструкции.\n" +
                     "\n" +
@@ -68,6 +81,19 @@ public class BotCommands {
                     "\n" +
                     "Поджигать мусор, пользоваться открытым огнем, а также нарушать иные требования пожарной безопасности на территории приюта категорически запрещено. ";
 
+    public static final String R_HOW_TO_MEET_PET = "ПРАВИЛА ПО ЗНАКОМСТВУ С ПИТОМЦЕМ";
+    public static final String R_REQUIRED_DOCUMENTS = "НЕОБХОДИМЫЕ ДОКУМЕНТЫ";
+    public static final String R_REASONS_WHY_MAY_BE_DENIED = "ВОЗМОЖНЫЕ ПРИЧИНЫ ОТКАЗА";
+    public static final String R_RECOMENDATIONS_TRANSPORT = "РЕКОМЕНДАЦИИ ПО ТРАНСПОРТИРОВКЕ";
+    public static final String R_RECOMENDATIONS_HOUSE_YOUNG = "РЕКОМЕНДАЦИИ ДЛЯ МОЛОДЫХ ПИТОМЦЕВ";
+    public static final String R_RECOMENDATIONS_HOUSE_ADULT = "РЕКОМЕНДАЦИИ ДЛЯ ВЗРОСЛЫХ ПИТОМЦЕВ";
+    public static final String R_RECOMENDATIONS_HOUSE_DISABLED = "РЕКОМЕНДАЦИИ ДЛЯ ПИТОМЦЕВ С ИНВАЛИДНОСТЬЮ";
+    public static final String R_PROTIPS_LINK = "Ссылки на обучающие видео.";
+    public static final String R_REPORT_INSTRUCTIONS = "Сделайте фото питомца, а затем напишите к фото следующее:\n" +
+            "-Его рацион.\n" +
+            "-Его общее самочувствие и привыкание к новому дому.\n" +
+            "-Опишите его поведение.\n" +
+            "Один из наших волонтёров примет фото.";
 
     /**
      * меню с ответами, которые предоставляет бот - используется в слушателе  {@link TelegramBotUpdatesListener}.
@@ -76,8 +102,35 @@ public class BotCommands {
     public static final ReplyKeyboardMarkup startMarkup = new ReplyKeyboardMarkup(new String[]{PICK_SHELTER_CATS, PICK_SHELTER_DOGS});
     public static final ReplyKeyboardMarkup mainMenuMarkup = new ReplyKeyboardMarkup(new String[]{
             MAINMENU_SHELTER_INFORMATION, MAINMENU_HOW_TO_ADOPT_A_PET, MAINMENU_SEND_PET_REPORT},
-            new String[]{CALL_VOLUNTEER,START});
+            new String[]{CALL_VOLUNTEER, START});
     public static final ReplyKeyboardMarkup infoMenuMarkup = new ReplyKeyboardMarkup(new String[]{
-            INFO_SHELTER_ADDRESS, INFO_SHELTER_TIMETABLE, INFO_SAFETY_PRECAUTIONS,INFO_CAR_PASS},
-            new String[]{INFO_LEAVE_CONTACTS,CALL_VOLUNTEER,START});
+            INFO_SHELTER_ADDRESS, INFO_SHELTER_TIMETABLE, INFO_SAFETY_PRECAUTIONS, INFO_CAR_PASS},
+            new String[]{INFO_LEAVE_CONTACTS, CALL_VOLUNTEER, START});
+
+    public static final ReplyKeyboardMarkup adoptPetDogMenuMarkup = new ReplyKeyboardMarkup(new String[]{
+            ADOPT_HOW_TO_MEET_PET, ADOPT_REQUIRED_DOCUMENTS, ADOPT_LEAVE_CONTACTS, ADOPT_RECOMENDATIONS_MENU},
+            new String[]{ADOPT_DOG_PROTIPS, ADOPT_REASONS_WHY_MAY_BE_DENIED, RETURN_MAINMENU});
+
+    public static final ReplyKeyboardMarkup adoptPetCatMenuMarkup = new ReplyKeyboardMarkup(new String[]{
+            ADOPT_HOW_TO_MEET_PET, ADOPT_REQUIRED_DOCUMENTS, ADOPT_LEAVE_CONTACTS},
+            new String[]{ADOPT_RECOMENDATIONS_MENU, ADOPT_REASONS_WHY_MAY_BE_DENIED, RETURN_MAINMENU});
+
+    public static final ReplyKeyboardMarkup adoptPetRecommendationsMenuMarkup = new ReplyKeyboardMarkup(
+            new String[]{ADOPT_RECOMENDATIONS_TRANSPORT},
+            new String[]{ADOPT_RECOMENDATIONS_HOUSE_YOUNG},
+            new String[]{ADOPT_RECOMENDATIONS_HOUSE_ADULT},
+            new String[]{ADOPT_RECOMENDATIONS_HOUSE_DISABLED},
+            new String[]{MAINMENU_HOW_TO_ADOPT_A_PET});
+
+    public static final Keyboard receiveTelephoneNumber = new ReplyKeyboardMarkup(
+            new KeyboardButton[]{
+                    new KeyboardButton(ADOPT_LEAVE_CONTACTS).requestContact(true),
+                    new KeyboardButton(RETURN_MAINMENU)
+            });
+
+    public static final InlineKeyboardMarkup protipsLinkKeyboard = new InlineKeyboardMarkup(
+            new InlineKeyboardButton[]{new InlineKeyboardButton("Первичное общениям с собакой").url("https://www.youtube.com/watch?v=Bssrpyso_QA"),
+                    new InlineKeyboardButton("Рекомендации кинологов").url("https://www.youtube.com/watch?v=Mv4E47QBCQo"),
+            });
+
 }

@@ -4,6 +4,9 @@ import edu.group5.petshelterbot.entity.Dog;
 import edu.group5.petshelterbot.repository.DogRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -41,10 +44,22 @@ public class DogService {
     }
 
     public void setDogOwner(long ownerId, long dogId) {
+        Calendar trialDate = Calendar.getInstance();
+        trialDate.add(Calendar.DATE, 30);
+        dogRepository.setOwnerTrialDate(trialDate.getTime(), dogId);
         dogRepository.setOwnerId(ownerId, dogId);
+    }
+    public void addDaysToTrialDate(int extraDays, long dogId) {
+        Calendar trialDate = Calendar.getInstance();
+        trialDate.add(Calendar.DATE, extraDays);
+        dogRepository.setOwnerTrialDate(trialDate.getTime(), dogId);
+    }
+    public Date getTrialDate(long id){
+        return dogRepository.getTrialDate(id);
     }
 
     public void deleteOwnerId(long dogId) {
+        dogRepository.deleteOwnerTrialDate(dogId);
         dogRepository.deleteOwnerId(dogId);
     }
 

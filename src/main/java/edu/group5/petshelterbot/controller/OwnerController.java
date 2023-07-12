@@ -1,6 +1,7 @@
 package edu.group5.petshelterbot.controller;
 
 
+import edu.group5.petshelterbot.entity.Cat;
 import edu.group5.petshelterbot.entity.Owner;
 import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.service.OwnerService;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public class OwnerController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Добавление новых пользователей в базу данных." +
             "Необходимо учитывать корректный telegram id (tgUserId) пользователя.")
-    public ResponseEntity addNewOwner(@RequestBody Owner owner) {
+    public ResponseEntity addNewOwner(@RequestBody Owner owner) throws Exception {
         return ResponseEntity.ok("Новый пользователь добавлен в БД: " + ownerService.saveOwner(owner));
     }
 
@@ -48,6 +50,32 @@ public class OwnerController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(owner);
+    }
+
+    @GetMapping("/get_cats/{id}")
+    @Operation(description = "Поиск ктоов владельца в БД. - где вводится id владельца, и получается список с ID котов.")
+    @Parameters(value = {
+            @Parameter(name = "id", example = "1")
+    })
+    public ResponseEntity<List<Integer>> getCats(@RequestParam long id) {
+        List<Integer> cats = ownerService.getCatsIDs(id);
+        if (cats.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(cats);
+    }
+
+    @GetMapping("/get_dogs/{id}")
+    @Operation(description = "Поиск собак владельца в БД. - где вводится id владельца, и получается список ID собак.")
+    @Parameters(value = {
+            @Parameter(name = "id", example = "1")
+    })
+    public ResponseEntity<List<Integer>> getDogs(@RequestParam long id) {
+        List<Integer> dogs = ownerService.getDogsIDs(id);
+        if (dogs.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(dogs);
     }
 
     @GetMapping("/all_owners")

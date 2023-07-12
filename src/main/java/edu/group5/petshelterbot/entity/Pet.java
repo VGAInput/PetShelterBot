@@ -3,6 +3,7 @@ package edu.group5.petshelterbot.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -22,6 +23,7 @@ public abstract class Pet {
     private String breed;
     private String sex;
     private boolean is_sterilized;
+
     public Pet(String name, int age, String breed, String sex, boolean is_sterilized) {
         this.name = name;
         this.age = age;

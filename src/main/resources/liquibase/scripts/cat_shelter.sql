@@ -9,6 +9,7 @@ CREATE TABLE cat_shelter
     breed        VARCHAR(50) NOT NULL,
     sex          VARCHAR(1)  NOT NULL,
     is_sterilized BOOLEAN     NOT NULL,
+    trial_date_time DATE,
     owner_id     BIGINT,
     FOREIGN KEY (owner_id) REFERENCES owners (id)
 );
