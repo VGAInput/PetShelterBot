@@ -32,6 +32,12 @@ import java.util.concurrent.TimeUnit;
  * {@link ShelterTopic} - Вариант приюта при ведении диалога.
  * {@link BotCommands} - Список с запросами пользователя, ответами бота и меню.
  * {@link #petReportNotification()} - Каждый день в 12:00 Отправляет сообщение пользователю
+ * <p>
+ * {@link  #processPhoneContact(List)} - Процесс распознования номера телефона и запись в БД.
+ * {@link #processSendPhotoReport(List)} - Процесс распознования и проверка фото с отчётом.
+ * {@link #processReplyReport(List)} - Процесс ответа волонтёра на отчёт владельца.
+ * {@link #processTextRecognizing(List)} - Процесс распознования текста пользователя и бота.
+ * <p>
  * * если у него есть пёс или собака - для каждого питомца создается сообщение с его именем т датой окончания исп. срока
  */
 @Service
@@ -64,7 +70,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     public void petReportNotification() {
         localDateTime = LocalDateTime.now();
-        if (localDateTime.getHour() == 23) {
+        if (localDateTime.getHour() == 12) {
             for (int i = 0; i <= ownerService.getAllOwners().size() - 1; i++) {
                 catReportReminder(ownerService.getAllOwners().get(i).getTgUserId());
                 dogReportReminder(ownerService.getAllOwners().get(i).getTgUserId());
@@ -75,47 +81,80 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
 
-        /* Методо сохранения телефонного номера в бд. */
+        processPhoneContact(updates);
+        processReplyReport(updates);
+        processSendPhotoReport(updates);
+        processTextRecognizing(updates);
+
+        return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    private void processPhoneContact(List<Update> updates) {
         updates.stream().filter(update -> update.message().contact() != null).forEach(update -> {
             Message msg = update.message();
-
             Contact contact = msg.contact();
             Long chatId = msg.chat().id();
             ownerService.setOwnerTelephoneNumber(ownerService.getOwnerByTgUserId(chatId).getId(), contact.phoneNumber());
             sendMessage(chatId, "Ваш телефонный номер добавлен в базу данных");
         });
+    }
 
+    private void processReplyReport(List<Update> updates) {
+        updates.stream().filter(update -> update.message().replyToMessage() != null).forEach(update -> {
 
-        updates.stream().filter(update -> update.message() != null).forEach(update -> {
+            logger.info("Processing update: {}", update);
+            Message msg = update.message();
+
+            if (msg.replyToMessage().photo() != null && msg.replyToMessage().caption() != null) {
+                logger.info("REPLY DETECTED, SENDER OF ORIGINAL IS "
+                        + msg.replyToMessage().chat().firstName());
+                sendMessage(msg.replyToMessage().chat().id(), "" + msg.text());
+            }
+        });
+    }
+
+    private void processSendPhotoReport(List<Update> updates) {
+        updates.stream().filter(update -> update.message().photo() != null).forEach(update -> {
             logger.info("Processing update: {}", update);
             Message msg = update.message();
             Long chatId = msg.chat().id();
             String addressForVolunteer = "[" + msg.from().firstName() + "](tg://user?id=" + msg.from().id() + ")";
-
             if (msg.photo() != null && msg.caption() != null) {
                 switch (shelterTopic) {
                     case CATS -> {
                         long pickedVolunteer = volunteerService.getRandomVolunteer("cat_shelter");
                         sendMessageToVolunteer(pickedVolunteer, addressForVolunteer + " " +
-                                "прислал отчёт о своём питомце. Если отчёт не отвечает требованиям - сообщите об этом владельцу.");
-                        sendPhotoReport(chatId, pickedVolunteer, msg.messageId());
+                                " прислал отчёт о своём питомце. Ответьте на этот отчёт владельцу кота - подтвердите, если " +
+                                "он отвечает нормам отчёта, иначе опишите ошибку.");
+                        sendPhotoReport(pickedVolunteer, chatId, msg.messageId());
+
                         sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.");
                     }
                     case DOGS -> {
                         long pickedVolunteer = volunteerService.getRandomVolunteer("dog_shelter");
-                        sendMessageToVolunteer(pickedVolunteer, addressForVolunteer + " " +
-                                "прислал отчёт о своём питомце. Если отчёт не отвечает требованиям - сообщите об этом владельцу.");
                         sendPhotoReport(chatId, pickedVolunteer, msg.messageId());
-                        sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.");
+                        logger.info(update.message().messageId() + "");
+                        sendMessageToVolunteer(pickedVolunteer, addressForVolunteer + " " +
+                                " прислал отчёт о своём питомце. Ответьте на этот отчёт владельцу кота - подтвердите, если " +
+                                "он отвечает нормам отчёта, иначе опишите ошибку.");
 
+                        sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.");
                     }
                 }
             } else if (msg.photo() != null && msg.caption() == null) {
                 logger.warn("IMAGE WITHOUT CAPTION DETECTED");
-                sendMessage(chatId, "К фото нету текста. Пожалуйста, напишите отчёт в описании к фото.");
+                sendMessage(chatId, "К фото не добавлен текст. Пожалуйста, напишите отчёт в описании к фото.");
             }
+        });
+    }
 
-            // ПРОВЕРКА СООБЩЕНИЯ БОТАМ НА ПРИСУТВИЕ ТЕКСТА
+    private void processTextRecognizing(List<Update> updates) {
+        updates.stream().filter(update -> update.message().text() != null).forEach(update -> {
+            logger.info("Processing update: {}", update);
+            Message msg = update.message();
+            Long chatId = msg.chat().id();
+            String addressForVolunteer = "[" + msg.from().firstName() + "](tg://user?id=" + msg.from().id() + ")";
+
             if (msg.text() != null) {
                 String text = msg.text();
                 switch (text) {
@@ -271,7 +310,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
 
                 {
-                    /**
+                    /*
                      * Функция добавить пользователя как волонтёра
                      * Аккаунт пользователя телеграма будет добавлен в БД как волонтёр
                      * определённоого приюта {@link Volunteer}. Одному из волонтёру будет отправлено сообщение,
@@ -297,7 +336,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
             }
         });
-        return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
     void dogReportReminder(long chatId) {
@@ -332,6 +370,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         if (!sendResponse.isOk()) logger.error("ERROR SENDING MESSAGE: {}", sendResponse.description());
     }
 
+    // Метод для ответа с опциями меню.
     private void sendOptions(Long chatId, String message, ReplyKeyboardMarkup reply) {
         SendMessage sendMenu = new SendMessage(chatId, message).replyMarkup(reply);
         SendResponse sendResponse = tgBot.execute(sendMenu);
@@ -354,8 +393,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         if (!sendResponse.isOk()) logger.error("ERROR SENDING MESSAGE: {}", sendResponse.description());
     }
 
-    private void sendPhotoReport(Long chatIdFrom, Long chatIdTo, int messageId) {
-        ForwardMessage forwardMessage = new ForwardMessage(chatIdFrom, chatIdFrom, messageId);
+    //Отправление отчёта с фотографией
+    private void sendPhotoReport(Long chatIdTo, Long chatIdFrom, int messageId) {
+        ForwardMessage forwardMessage = new ForwardMessage(chatIdTo, chatIdFrom, messageId);
         SendResponse sendResponse = tgBot.execute(forwardMessage);
         logger.info("A REPORT WAS SEND TO A VOLUNTEER.");
         if (!sendResponse.isOk()) logger.error("ERROR SENDING MESSAGE: {}", sendResponse.description());
