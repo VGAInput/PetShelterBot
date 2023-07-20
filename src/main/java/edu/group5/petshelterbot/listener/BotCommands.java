@@ -17,6 +17,8 @@ public class BotCommands {
      * REPORT_ - команды ветки "Отправить отчёт о питомце".
      */
     public static final String START = "/start";
+    public static final String VOLUNTEER_ACCEPT_REPORT = "Отсчёт отвечает норме.";
+    public static final String VOLUNTEER_DECLINE_AND_NOTIFY_REPORT = "Отсчёт НЕ отвечает норме.";
 
     public static final String PICK_SHELTER_CATS = "Приют для кошек";
     public static final String PICK_SHELTER_DOGS = "Приют для собак";
@@ -82,11 +84,18 @@ public class BotCommands {
                     "Поджигать мусор, пользоваться открытым огнем, а также нарушать иные требования пожарной безопасности на территории приюта категорически запрещено. ";
 
     public static final String R_HOW_TO_MEET_PET = "ПРАВИЛА ПО ЗНАКОМСТВУ С ПИТОМЦЕМ";
-    public static final String R_REQUIRED_DOCUMENTS = "НЕОБХОДИМЫЕ ДОКУМЕНТЫ";
-    public static final String R_REASONS_WHY_MAY_BE_DENIED = "ВОЗМОЖНЫЕ ПРИЧИНЫ ОТКАЗА";
-    public static final String R_RECOMENDATIONS_TRANSPORT = "РЕКОМЕНДАЦИИ ПО ТРАНСПОРТИРОВКЕ";
-    public static final String R_RECOMENDATIONS_HOUSE_YOUNG = "РЕКОМЕНДАЦИИ ДЛЯ МОЛОДЫХ ПИТОМЦЕВ";
-    public static final String R_RECOMENDATIONS_HOUSE_ADULT = "РЕКОМЕНДАЦИИ ДЛЯ ВЗРОСЛЫХ ПИТОМЦЕВ";
+    public static final String R_REQUIRED_DOCUMENTS = "Необходим паспорт для заполнения документов при приёме питомца.";
+    public static final String R_REASONS_WHY_MAY_BE_DENIED = "-Отсутствие регистрации или соббственного жилья.\n" +
+            "-Отсутствие места для питомца в доме\n -Нахождение в чёрном списке приютов\n";
+    public static final String R_RECOMENDATIONS_TRANSPORT = "Первое время рекомендуется использовать клетку для питомца. Собак рекомендуется" +
+            "приучивать к клетке как к личному домику в котором она будет в безопасности и комфорте, а не наказанию.";
+    public static final String R_RECOMENDATIONS_HOUSE_YOUNG = "После переезда питомцу понадобится максимальное внимание, поэтому стоит примерно неделю неотлучно находиться при нем." +
+            " Потому что, попав в незнакомую обстановку, питомец может доставить кучу хлопот." +
+            " Для питомца первые дни пребывания у вас дома будут самыми тяжелыми, и поведение ее будет далеко не радужным, но это проходит.";
+    public static final String R_RECOMENDATIONS_HOUSE_ADULT = "Чем старше собака, тем больше вероятность того, что она уже обучена. В действительности, в приютах не так много собак, которые с самого рождения были бездомными." +
+            " У многих собак были когда-то хозяева, и такие особи вполне могут помнить некоторые команды.\n" +
+            "\nПоэтому, если вы приютите у себя взрослую собаку, вам не нужно будет уделять много времени на ее обучение. Ученые давно доказали, что у собак есть память," +
+            " поэтому взятого на воспитание питомца не надо приучать к «туалетным ритуалам», он и так может их неплохо помнить. Уже через несколько дней вы вместе со своим новым другом сможете понять, как хорошо он помнит команды. Хотя главное, конечно, не их количество, а общение с жаждущим внимания существом и ваша забота.";
     public static final String R_RECOMENDATIONS_HOUSE_DISABLED = "РЕКОМЕНДАЦИИ ДЛЯ ПИТОМЦЕВ С ИНВАЛИДНОСТЬЮ";
     public static final String R_PROTIPS_LINK = "Ссылки на обучающие видео.";
     public static final String R_REPORT_INSTRUCTIONS = "Сделайте фото питомца, а затем напишите к фото следующее:\n" +
@@ -132,5 +141,6 @@ public class BotCommands {
             new InlineKeyboardButton[]{new InlineKeyboardButton("Первичное общениям с собакой").url("https://www.youtube.com/watch?v=Bssrpyso_QA"),
                     new InlineKeyboardButton("Рекомендации кинологов").url("https://www.youtube.com/watch?v=Mv4E47QBCQo"),
             });
+
 
 }
