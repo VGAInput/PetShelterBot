@@ -4,7 +4,7 @@
 CREATE TABLE owners
 (
     id       SERIAL primary key,
-    tg_user_id INTEGER     NOT NULL,
+    tg_user_id BIGINT     NOT NULL,
     name     VARCHAR(15) NOT NULL,
     telephone_number VARCHAR,
     car_number VARCHAR
