@@ -1,6 +1,7 @@
 package edu.group5.petshelterbot.listener;
 
 import com.pengrad.telegrambot.model.request.*;
+import org.springframework.lang.Nullable;
 
 
 /**
@@ -119,28 +120,22 @@ public class BotCommands {
     public static final ReplyKeyboardMarkup adoptPetDogMenuMarkup = new ReplyKeyboardMarkup(new String[]{
             ADOPT_HOW_TO_MEET_PET, ADOPT_REQUIRED_DOCUMENTS, ADOPT_LEAVE_CONTACTS, ADOPT_RECOMENDATIONS_MENU},
             new String[]{ADOPT_DOG_PROTIPS, ADOPT_REASONS_WHY_MAY_BE_DENIED, RETURN_MAINMENU});
-
     public static final ReplyKeyboardMarkup adoptPetCatMenuMarkup = new ReplyKeyboardMarkup(new String[]{
             ADOPT_HOW_TO_MEET_PET, ADOPT_REQUIRED_DOCUMENTS, ADOPT_LEAVE_CONTACTS},
             new String[]{ADOPT_RECOMENDATIONS_MENU, ADOPT_REASONS_WHY_MAY_BE_DENIED, RETURN_MAINMENU});
-
     public static final ReplyKeyboardMarkup adoptPetRecommendationsMenuMarkup = new ReplyKeyboardMarkup(
             new String[]{ADOPT_RECOMENDATIONS_TRANSPORT},
             new String[]{ADOPT_RECOMENDATIONS_HOUSE_YOUNG},
             new String[]{ADOPT_RECOMENDATIONS_HOUSE_ADULT},
             new String[]{ADOPT_RECOMENDATIONS_HOUSE_DISABLED},
             new String[]{MAINMENU_HOW_TO_ADOPT_A_PET});
-
     public static final Keyboard receiveTelephoneNumber = new ReplyKeyboardMarkup(
             new KeyboardButton[]{
                     new KeyboardButton(ADOPT_LEAVE_CONTACTS).requestContact(true),
                     new KeyboardButton(RETURN_MAINMENU)
             });
-
     public static final InlineKeyboardMarkup protipsLinkKeyboard = new InlineKeyboardMarkup(
             new InlineKeyboardButton[]{new InlineKeyboardButton("Первичное общениям с собакой").url("https://www.youtube.com/watch?v=Bssrpyso_QA"),
                     new InlineKeyboardButton("Рекомендации кинологов").url("https://www.youtube.com/watch?v=Mv4E47QBCQo"),
             });
-
-
 }

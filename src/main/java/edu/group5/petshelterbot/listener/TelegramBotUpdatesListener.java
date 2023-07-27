@@ -3,11 +3,6 @@ package edu.group5.petshelterbot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.*;
-import com.pengrad.telegrambot.model.request.*;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.SendResponse;
-import edu.group5.petshelterbot.entity.Owner;
-import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.service.CatService;
 import edu.group5.petshelterbot.service.DogService;
 import edu.group5.petshelterbot.service.OwnerService;
@@ -34,11 +29,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     @Autowired
     private final TelegramBot tgBot;
-    private final DogService dogService;
-    private final CatService catService;
-    private final VolunteerService volunteerService;
-    private final OwnerService ownerService;
-
     private VolunteerHandler volunteerHandler;
     private OwnerHandler ownerHandler;
 
@@ -46,11 +36,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     public TelegramBotUpdatesListener(TelegramBot tgBot, DogService dogService,
                                       OwnerHandler ownerHandler, CatService catService,
                                       VolunteerService volunteerService, OwnerService ownerService, VolunteerHandler volunteerHandler) {
-        this.dogService = dogService;
-        this.catService = catService;
-        this.volunteerService = volunteerService;
+
         this.tgBot = tgBot;
-        this.ownerService = ownerService;
         this.volunteerHandler = volunteerHandler;
         this.ownerHandler = ownerHandler;
     }
@@ -68,6 +55,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         ownerHandler.processTextRecognizing(updates);
 
         volunteerHandler.processReplyReport(updates);
+        volunteerHandler.processTextRecognizing(updates);
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }

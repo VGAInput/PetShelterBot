@@ -51,6 +51,11 @@ public class VolunteerService {
         return getVolunteerByTgUserId(chatId) != null;
     }
 
+    public void isReady(boolean isReady, long chatId) {
+        if (isReady == true) volunteerRepository.setReady(1, chatId);
+        else volunteerRepository.setReady(0, chatId);
+    }
+
     public Volunteer getVolunteerByTgUserId(long userId) {
         return volunteerRepository.findVolunteerByTgUserId(userId);
     }

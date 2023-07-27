@@ -7,14 +7,14 @@ import com.pengrad.telegrambot.model.Update;
 import edu.group5.petshelterbot.entity.Cat;
 import edu.group5.petshelterbot.entity.Dog;
 import edu.group5.petshelterbot.entity.Owner;
-import edu.group5.petshelterbot.service.CatService;
-import edu.group5.petshelterbot.service.DogService;
-import edu.group5.petshelterbot.service.OwnerService;
-import edu.group5.petshelterbot.service.VolunteerService;
+import edu.group5.petshelterbot.entity.Report;
+import edu.group5.petshelterbot.service.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -25,15 +25,17 @@ public class OwnerHandler {
     private final VolunteerService volunteerService;
     private final CatService catService;
     private final DogService dogService;
+    private final ReportService reportService;
     private BotFunctions botFunctions;
     private ShelterTopic shelterTopic = ShelterTopic.NOT_PICKED;
 
-    public OwnerHandler(TelegramBot tgBot, OwnerService ownerService, VolunteerService volunteerService, CatService catService, DogService dogService) {
+    public OwnerHandler(ReportService reportService, TelegramBot tgBot, OwnerService ownerService, VolunteerService volunteerService, CatService catService, DogService dogService) {
         this.tgBot = tgBot;
         this.ownerService = ownerService;
         this.volunteerService = volunteerService;
         this.catService = catService;
         this.dogService = dogService;
+        this.reportService = reportService;
         botFunctions = new BotFunctions();
     }
 
@@ -78,25 +80,24 @@ public class OwnerHandler {
             Message msg = update.message();
             Long chatId = msg.chat().id();
             String addressForVolunteer = "[" + msg.from().firstName() + "](tg://user?id=" + msg.from().id() + ")";
+
             if (msg.photo() != null && msg.caption() != null) {
+
                 switch (shelterTopic) {
                     case CATS -> {
                         long pickedVolunteer = volunteerService.getRandomVolunteer("cat_shelter");
-                        botFunctions.sendMessageToVolunteer(pickedVolunteer, addressForVolunteer + " " +
-                                " прислал отчёт о своём питомце. Ответьте на этот отчёт владельцу кота - подтвердите, если " +
-                                "он отвечает нормам отчёта, иначе опишите ошибку.", tgBot);
-                        botFunctions.sendPhotoReport(pickedVolunteer, chatId, msg.messageId(), tgBot);
-
+                        botFunctions.sendPhotoReport(update, pickedVolunteer, chatId, tgBot);
+                        reportService.saveReport(new Report(update.message().messageId(), ownerService.getOwnerByTgUserId(chatId).getId(),
+                                Date.from(Instant.now()), volunteerService.getVolunteerByTgUserId(pickedVolunteer).getId(), msg.caption(), 0));
+                        botFunctions.sendMessage(pickedVolunteer, "Пришёл отчёт на кота. Проверьте и ответьте на сообщение /одобрить или /отклонить, если отчёт на отвечает условиям.", tgBot);
                         botFunctions.sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.", tgBot);
                     }
                     case DOGS -> {
                         long pickedVolunteer = volunteerService.getRandomVolunteer("dog_shelter");
-                        botFunctions.sendPhotoReport(chatId, pickedVolunteer, msg.messageId(), tgBot);
-                        botFunctions.logger.info(update.message().messageId() + "");
-                        botFunctions.sendMessageToVolunteer(pickedVolunteer, addressForVolunteer + " " +
-                                " прислал отчёт о своём питомце. Ответьте на этот отчёт владельцу кота - подтвердите, если " +
-                                "он отвечает нормам отчёта, иначе опишите ошибку.", tgBot);
-
+                        botFunctions.sendPhotoReport(update, pickedVolunteer, chatId, tgBot);
+                        reportService.saveReport(new Report(update.message().messageId(), ownerService.getOwnerByTgUserId(chatId).getId(),
+                                Date.from(Instant.now()), volunteerService.getVolunteerByTgUserId(pickedVolunteer).getId(), msg.caption(), 0));
+                        botFunctions.sendMessage(pickedVolunteer, "Пришёл отчёт на собаку. Проверьте и ответьте на сообщение /одобрить или /отклонить, если отчёт на отвечает условиям.", tgBot);
                         botFunctions.sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.", tgBot);
                     }
                 }

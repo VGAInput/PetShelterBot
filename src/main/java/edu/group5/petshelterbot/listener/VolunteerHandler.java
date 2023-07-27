@@ -3,12 +3,8 @@ package edu.group5.petshelterbot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.SendResponse;
+import edu.group5.petshelterbot.service.ReportService;
 import edu.group5.petshelterbot.service.VolunteerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,14 +17,15 @@ public class VolunteerHandler {
     private LocalDateTime localDateTime;
 
     private final VolunteerService volunteerService;
+    private final ReportService reportService;
     private final TelegramBot tgBot;
     private BotFunctions botFunctions;
     private Long chatId;
 
-    public VolunteerHandler(VolunteerService volunteerService, TelegramBot tgBot) {
+    public VolunteerHandler(VolunteerService volunteerService, ReportService reportService, TelegramBot tgBot) {
         this.volunteerService = volunteerService;
+        this.reportService = reportService;
         this.tgBot = tgBot;
-
         botFunctions = new BotFunctions();
     }
 
@@ -42,16 +39,50 @@ public class VolunteerHandler {
         }
     }
 
+    public void processTextRecognizing(List<Update> updates) {
+        updates.stream().filter(update -> update.message().text() != null).forEach(update -> {
+            botFunctions.logger.info("Processing update: {}", update);
+            Message msg = update.message();
+            chatId = msg.chat().id();
+
+            if (volunteerService.isCurrentUserVolunteer(chatId)) {
+                botFunctions.logger.info("Current user is volunteer");
+                if (msg.text() != null) {
+                    String text = msg.text();
+                    switch (text) {
+                        case "/готов": {
+                            volunteerService.isReady(true, volunteerService.getVolunteerByTgUserId(chatId).getId());
+                            botFunctions.sendMessage(chatId, "Вы готовы к работе с владельцами.", tgBot);
+                        }
+                        break;
+                        case "/неготов": {
+                            volunteerService.isReady(false, volunteerService.getVolunteerByTgUserId(chatId).getId());
+                            botFunctions.sendMessage(chatId, "Вы свободны от обязанностей волонтёра.", tgBot);
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
     public void processReplyReport(List<Update> updates) {
         updates.stream().filter(update -> update.message().replyToMessage() != null).forEach(update -> {
-
             botFunctions.logger.info("Processing update: {}", update);
             Message msg = update.message();
 
             if (msg.replyToMessage().photo() != null && msg.replyToMessage().caption() != null) {
+                if (msg.text().equals("/одобрить")) {
+                    reportService.setApprove(1, reportService.getReportByText(msg.replyToMessage().caption()).getId());
+                    botFunctions.sendMessage(msg.replyToMessage().forwardFrom().id(), "Ваш отчёт одобрен, спасибо!", tgBot);
+
+                } else if (msg.text().equals("/отклонить")) {
+                    reportService.setApprove(0, reportService.getReportByText(msg.replyToMessage().caption()).getId());
+                    botFunctions.sendMessage(msg.replyToMessage().forwardFrom().id(), "Ваш отчёт не отвечает требованиям. Пожалуйста проверьте условия в " +
+                            "меню " + BotCommands.MAINMENU_SEND_PET_REPORT, tgBot);
+                }
                 botFunctions.logger.info("REPLY DETECTED, SENDER OF ORIGINAL IS "
                         + msg.replyToMessage().chat().firstName());
-                botFunctions.sendMessage(msg.replyToMessage().chat().id(), "" + msg.text(), tgBot);
             }
         });
     }

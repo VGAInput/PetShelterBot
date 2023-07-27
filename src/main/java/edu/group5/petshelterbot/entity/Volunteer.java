@@ -18,11 +18,13 @@ public class Volunteer {
     private String name;
     private long tgUserId;
     private String shelterTableName;
+    private int isReady;
 
-    public Volunteer(String name, String shelterTableName, long tgUserId) {
+    public Volunteer(String name, String shelterTableName, long tgUserId, int isReady) {
         this.name = name;
         this.tgUserId = tgUserId;
         this.shelterTableName = shelterTableName;
+        this.isReady = isReady;
     }
 
     @Override
