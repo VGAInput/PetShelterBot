@@ -1,6 +1,7 @@
 package edu.group5.petshelterbot.listener;
 
 import com.pengrad.telegrambot.model.request.*;
+import org.springframework.lang.Nullable;
 
 
 /**
@@ -83,7 +84,16 @@ public class BotCommands {
                     "\n" +
                     "Поджигать мусор, пользоваться открытым огнем, а также нарушать иные требования пожарной безопасности на территории приюта категорически запрещено. ";
 
-    public static final String R_HOW_TO_MEET_PET = "ПРАВИЛА ПО ЗНАКОМСТВУ С ПИТОМЦЕМ";
+
+    public static final String R_HOW_TO_MEET_PET = "Правила по знакомству с питомцем:\n" +
+            "\n" +
+            "1. При подходе к питомцу нужно замедлиться, снизив темп.\n" +
+            "2. Не стоит подходить к питомцу по прямой, считается вежливым подходить друг к другу по дуге, даже если она символическая\n" +
+            "3. Не нужно тискать питомца, трепать его, похлопывать, особенно по голове. Большинству это не нравится, а еще такие действия могут чрезмерно перевозбудить животное. Во время контакта нужно следить за обратной связью — прикосновения к некоторым частям тела могут быть дискомфортны для конкретного питомца.\n" +
+            "4. Не нависайте над животным, наклоняясь к нему, особенно лицом. Лучше присесть на корточки, немного повернувшись боком.\n" +
+            "5. Не берите питомца на руки, отрывая его от земли. Если животное само пришло на ручки, это другой вопрос, но даже в таком случае лучше сидеть статично.\n" +
+            "6. Не забывайте спокойно дышать. Если вы от напряжения перестанете делать глубокие вдохи и выдохи, животное заметит это и тоже напряжется.";
+
     public static final String R_REQUIRED_DOCUMENTS = "Необходим паспорт для заполнения документов при приёме питомца.";
     public static final String R_REASONS_WHY_MAY_BE_DENIED = "-Отсутствие регистрации или соббственного жилья.\n" +
             "-Отсутствие места для питомца в доме\n -Нахождение в чёрном списке приютов\n";
@@ -96,7 +106,14 @@ public class BotCommands {
             " У многих собак были когда-то хозяева, и такие особи вполне могут помнить некоторые команды.\n" +
             "\nПоэтому, если вы приютите у себя взрослую собаку, вам не нужно будет уделять много времени на ее обучение. Ученые давно доказали, что у собак есть память," +
             " поэтому взятого на воспитание питомца не надо приучать к «туалетным ритуалам», он и так может их неплохо помнить. Уже через несколько дней вы вместе со своим новым другом сможете понять, как хорошо он помнит команды. Хотя главное, конечно, не их количество, а общение с жаждущим внимания существом и ваша забота.";
-    public static final String R_RECOMENDATIONS_HOUSE_DISABLED = "РЕКОМЕНДАЦИИ ДЛЯ ПИТОМЦЕВ С ИНВАЛИДНОСТЬЮ";
+
+    public static final String R_RECOMENDATIONS_HOUSE_DISABLED = "Взять питомца с инвалидностью из приюта - замечательное решение, которое может принести радость и поддержку как вам, так и животному. Однако, перед тем как принять решение, необходимо хорошо подготовиться и убедиться, что вы готовы предоставить такому питомцу заботу и подходящие условия для жизни. " +
+            "Вот несколько рекомендаций, которые могут помочь вам принять правильное решение и подготовиться к новому члену семьи:\n" +
+            "\n" +
+            " - Обращайтесь к персоналу приюта: Перед тем как принять решение, обратитесь к сотрудникам приюта и расскажите о своих желаниях и возможностях взять животное с инвалидностью. Они могут предоставить вам информацию о питомцах с особенностями и помочь подобрать подходящего.\n" +
+            " - Подумайте о своих возможностях: Уделите внимание своим ресурсам, включая финансовые, временные и эмоциональные возможности, которые вы можете предоставить питомцу с инвалидностью. Уход за животным с особенностями может потребовать дополнительных усилий и ресурсов.\n" +
+            " - Консультация с ветеринаром: Проконсультируйтесь с ветеринаром или специалистом по здоровью животных, чтобы узнать о потенциальных медицинских потребностях питомца и понять, справитесь ли вы с этим.";
+
     public static final String R_PROTIPS_LINK = "Ссылки на обучающие видео.";
     public static final String R_REPORT_INSTRUCTIONS = "Сделайте фото питомца, а затем напишите к фото следующее:\n" +
             "-Его рацион.\n" +
@@ -119,28 +136,22 @@ public class BotCommands {
     public static final ReplyKeyboardMarkup adoptPetDogMenuMarkup = new ReplyKeyboardMarkup(new String[]{
             ADOPT_HOW_TO_MEET_PET, ADOPT_REQUIRED_DOCUMENTS, ADOPT_LEAVE_CONTACTS, ADOPT_RECOMENDATIONS_MENU},
             new String[]{ADOPT_DOG_PROTIPS, ADOPT_REASONS_WHY_MAY_BE_DENIED, RETURN_MAINMENU});
-
     public static final ReplyKeyboardMarkup adoptPetCatMenuMarkup = new ReplyKeyboardMarkup(new String[]{
             ADOPT_HOW_TO_MEET_PET, ADOPT_REQUIRED_DOCUMENTS, ADOPT_LEAVE_CONTACTS},
             new String[]{ADOPT_RECOMENDATIONS_MENU, ADOPT_REASONS_WHY_MAY_BE_DENIED, RETURN_MAINMENU});
-
     public static final ReplyKeyboardMarkup adoptPetRecommendationsMenuMarkup = new ReplyKeyboardMarkup(
             new String[]{ADOPT_RECOMENDATIONS_TRANSPORT},
             new String[]{ADOPT_RECOMENDATIONS_HOUSE_YOUNG},
             new String[]{ADOPT_RECOMENDATIONS_HOUSE_ADULT},
             new String[]{ADOPT_RECOMENDATIONS_HOUSE_DISABLED},
             new String[]{MAINMENU_HOW_TO_ADOPT_A_PET});
-
     public static final Keyboard receiveTelephoneNumber = new ReplyKeyboardMarkup(
             new KeyboardButton[]{
                     new KeyboardButton(ADOPT_LEAVE_CONTACTS).requestContact(true),
                     new KeyboardButton(RETURN_MAINMENU)
             });
-
     public static final InlineKeyboardMarkup protipsLinkKeyboard = new InlineKeyboardMarkup(
             new InlineKeyboardButton[]{new InlineKeyboardButton("Первичное общениям с собакой").url("https://www.youtube.com/watch?v=Bssrpyso_QA"),
                     new InlineKeyboardButton("Рекомендации кинологов").url("https://www.youtube.com/watch?v=Mv4E47QBCQo"),
             });
-
-
 }

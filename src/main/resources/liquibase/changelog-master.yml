@@ -7,5 +7,7 @@ databaseChangeLog:
       file: liquibase/scripts/cat_shelter.sql
   - include:
       file: liquibase/scripts/volunteers.sql
+  - include:
+      file: liquibase/scripts/reports.sql
 
 

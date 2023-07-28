@@ -1,5 +1,6 @@
 package edu.group5.petshelterbot.service;
 
+import edu.group5.petshelterbot.entity.Owner;
 import edu.group5.petshelterbot.entity.Volunteer;
 import edu.group5.petshelterbot.repository.VolunteerRepository;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,19 @@ public class VolunteerService {
     public long getRandomVolunteer(String shelterName) {
         Random random = new Random();
         return volunteerIds(shelterName).get(random.nextInt(volunteerIds(shelterName).size()));
+    }
+
+    public boolean isCurrentUserVolunteer(long chatId) {
+        return getVolunteerByTgUserId(chatId) != null;
+    }
+
+    public void isReady(boolean isReady, long chatId) {
+        if (isReady == true) volunteerRepository.setReady(1, chatId);
+        else volunteerRepository.setReady(0, chatId);
+    }
+
+    public Volunteer getVolunteerByTgUserId(long userId) {
+        return volunteerRepository.findVolunteerByTgUserId(userId);
     }
 
     public Volunteer updateVolunteer(Volunteer volunteer) throws Exception {

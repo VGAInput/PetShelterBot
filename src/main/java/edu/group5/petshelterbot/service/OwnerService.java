@@ -17,8 +17,6 @@ import java.util.List;
  * {@link #getDogsIDs(long)} (long)} - получение листа с ID Собак владельца}
  */
 @Service
-
-
 public class OwnerService {
 
     @Value("${path.to.owner.files}")
