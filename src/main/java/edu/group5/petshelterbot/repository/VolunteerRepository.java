@@ -21,9 +21,7 @@ import java.util.List;
 public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     List<Volunteer> findVolunteersByShelterTableName(String shelterName);
-    Volunteer findVolunteerByTgUserId(long tgUserId);
-
-
+    List<Volunteer> findVolunteerByTgUserId(long tgUserId);
 
     Volunteer findVolunteersById(long id);
     boolean existsByShelterTableNameAndTgUserId(String shelterTableName,long tgUserId);

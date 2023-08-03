@@ -56,7 +56,7 @@ public class VolunteerService {
         else volunteerRepository.setReady(0, chatId);
     }
 
-    public Volunteer getVolunteerByTgUserId(long userId) {
+    public List<Volunteer> getVolunteerByTgUserId(long userId) {
         return volunteerRepository.findVolunteerByTgUserId(userId);
     }
 
