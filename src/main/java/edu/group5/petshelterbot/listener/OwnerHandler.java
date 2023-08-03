@@ -88,7 +88,7 @@ public class OwnerHandler {
                         long pickedVolunteer = volunteerService.getRandomVolunteer("cat_shelter");
                         botFunctions.sendPhotoReport(update, pickedVolunteer, chatId, tgBot);
                         reportService.saveReport(new Report(update.message().messageId(), ownerService.getOwnerByTgUserId(chatId).getId(),
-                                Date.from(Instant.now()), volunteerService.getVolunteerByTgUserId(pickedVolunteer).getId(), msg.caption(), 0));
+                                Date.from(Instant.now()), volunteerService.getVolunteerByTgUserId(pickedVolunteer).get(0).getId(), msg.caption(), 0));
                         botFunctions.sendMessage(pickedVolunteer, "Пришёл отчёт на кота. Проверьте и ответьте на сообщение /одобрить или /отклонить, если отчёт на отвечает условиям.", tgBot);
                         botFunctions.sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.", tgBot);
                     }
@@ -96,7 +96,7 @@ public class OwnerHandler {
                         long pickedVolunteer = volunteerService.getRandomVolunteer("dog_shelter");
                         botFunctions.sendPhotoReport(update, pickedVolunteer, chatId, tgBot);
                         reportService.saveReport(new Report(update.message().messageId(), ownerService.getOwnerByTgUserId(chatId).getId(),
-                                Date.from(Instant.now()), volunteerService.getVolunteerByTgUserId(pickedVolunteer).getId(), msg.caption(), 0));
+                                Date.from(Instant.now()), volunteerService.getVolunteerByTgUserId(pickedVolunteer).get(0).getId(), msg.caption(), 0));
                         botFunctions.sendMessage(pickedVolunteer, "Пришёл отчёт на собаку. Проверьте и ответьте на сообщение /одобрить или /отклонить, если отчёт на отвечает условиям.", tgBot);
                         botFunctions.sendMessage(chatId, "Ваш отчёт был отправлен волонтёру.", tgBot);
                     }
@@ -226,6 +226,9 @@ public class OwnerHandler {
 
                     break;
                     case BotCommands.ADOPT_LEAVE_CONTACTS: {
+                        botFunctions.sendOptions(chatId, BotCommands.R_TYPE_IN_YOUR_NUMBER, BotCommands.receiveTelephoneNumber, tgBot);
+                    }                    break;
+                    case BotCommands.INFO_LEAVE_CONTACTS: {
                         botFunctions.sendOptions(chatId, BotCommands.R_TYPE_IN_YOUR_NUMBER, BotCommands.receiveTelephoneNumber, tgBot);
                     }
                     break;

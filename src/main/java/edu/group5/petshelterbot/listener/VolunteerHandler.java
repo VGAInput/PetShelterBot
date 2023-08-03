@@ -51,12 +51,12 @@ public class VolunteerHandler {
                     String text = msg.text();
                     switch (text) {
                         case "/готов": {
-                            volunteerService.isReady(true, volunteerService.getVolunteerByTgUserId(chatId).getId());
+                            volunteerService.isReady(true, volunteerService.getVolunteerByTgUserId(chatId).get(0).getId());
                             botFunctions.sendMessage(chatId, "Вы готовы к работе с владельцами.", tgBot);
                         }
                         break;
                         case "/неготов": {
-                            volunteerService.isReady(false, volunteerService.getVolunteerByTgUserId(chatId).getId());
+                            volunteerService.isReady(false, volunteerService.getVolunteerByTgUserId(chatId).get(0).getId());
                             botFunctions.sendMessage(chatId, "Вы свободны от обязанностей волонтёра.", tgBot);
                         }
                         break;
