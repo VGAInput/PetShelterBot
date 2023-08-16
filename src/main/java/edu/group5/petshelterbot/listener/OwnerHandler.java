@@ -108,6 +108,30 @@ public class OwnerHandler {
         });
     }
 
+    public void processReplyVolunteer(List<Update> updates) {
+        updates.stream().filter(update -> update.message().replyToMessage() != null).forEach(update -> {
+            botFunctions.logger.info("Processing update: {}", update);
+            Message msg = update.message();
+
+            if (msg.replyToMessage().text() != null) {
+                if (msg.replyToMessage().text().contains("Ответ волонтёра - ответьте на это сообщение")) {
+                    String senderId = "";
+                    for (int i = 0; i < msg.replyToMessage().text().length() - 1; i++) {
+                        if (msg.replyToMessage().text().charAt(i) == ' ') break;
+                        senderId = senderId + msg.replyToMessage().text().charAt(i);
+
+                    }
+                    botFunctions.logger.info("SOMEONE NEED VOLUNTEER HELP " + senderId);
+                    botFunctions.sendMessage(Long.parseLong(senderId), msg.from().id() + " " + msg.from().firstName() +
+                            " Ответ пользователя - ответьте на это сообщние (reply/ответить), для того что бы ответить пользоватю.\n\n" +
+                            "" + msg.text(), tgBot);
+                }
+            }
+
+        });
+    }
+
+
     public void processTextRecognizing(List<Update> updates) {
         updates.stream().filter(update -> update.message().text() != null).forEach(update -> {
             botFunctions.logger.info("Processing update: {}", update);
@@ -172,13 +196,13 @@ public class OwnerHandler {
                         switch (shelterTopic) {
                             case CATS -> {
                                 botFunctions.sendOptions(chatId, "Одному из волонтёров кошачьего приюта отправлено сообщение, ждите ответа.", BotCommands.rebootMarkup, tgBot);
-                                botFunctions.sendMessageToVolunteer(volunteerService.getRandomVolunteer("cat_shelter"), addressForVolunteer + " " +
-                                        "просить волонтёра на помощь.", tgBot);
+                                botFunctions.sendMessageToVolunteer(volunteerService.getRandomVolunteer("cat_shelter"), chatId + " " + addressForVolunteer + " " +
+                                        "просит волонтёра на помощь.", tgBot);
                             }
                             case DOGS -> {
                                 botFunctions.sendOptions(chatId, "Одному из волонтёров собачьего приюта отправлено сообщение, ждите ответа.", BotCommands.rebootMarkup, tgBot);
-                                botFunctions.sendMessageToVolunteer(volunteerService.getRandomVolunteer("dog_shelter"), addressForVolunteer + " " +
-                                        "просить волонтёра на помощь.", tgBot);
+                                botFunctions.sendMessageToVolunteer(volunteerService.getRandomVolunteer("dog_shelter"), chatId + " " + addressForVolunteer + " " +
+                                        "просит волонтёра на помощь.", tgBot);
                             }
                         }
                     }
@@ -227,7 +251,8 @@ public class OwnerHandler {
                     break;
                     case BotCommands.ADOPT_LEAVE_CONTACTS: {
                         botFunctions.sendOptions(chatId, BotCommands.R_TYPE_IN_YOUR_NUMBER, BotCommands.receiveTelephoneNumber, tgBot);
-                    }                    break;
+                    }
+                    break;
                     case BotCommands.INFO_LEAVE_CONTACTS: {
                         botFunctions.sendOptions(chatId, BotCommands.R_TYPE_IN_YOUR_NUMBER, BotCommands.receiveTelephoneNumber, tgBot);
                     }

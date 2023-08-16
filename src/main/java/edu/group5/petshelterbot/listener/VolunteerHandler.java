@@ -70,19 +70,34 @@ public class VolunteerHandler {
         updates.stream().filter(update -> update.message().replyToMessage() != null).forEach(update -> {
             botFunctions.logger.info("Processing update: {}", update);
             Message msg = update.message();
+            if (volunteerService.isCurrentUserVolunteer(chatId)) {
+                if (msg.replyToMessage().photo() != null && msg.replyToMessage().caption() != null) {
+                    if (msg.text().equals("/одобрить")) {
+                        reportService.setApprove(1, reportService.getReportByText(msg.replyToMessage().caption()).getId());
+                        botFunctions.sendMessage(msg.replyToMessage().forwardFrom().id(), "Ваш отчёт одобрен, спасибо!", tgBot);
 
-            if (msg.replyToMessage().photo() != null && msg.replyToMessage().caption() != null) {
-                if (msg.text().equals("/одобрить")) {
-                    reportService.setApprove(1, reportService.getReportByText(msg.replyToMessage().caption()).getId());
-                    botFunctions.sendMessage(msg.replyToMessage().forwardFrom().id(), "Ваш отчёт одобрен, спасибо!", tgBot);
+                    } else if (msg.text().equals("/отклонить")) {
+                        reportService.setApprove(0, reportService.getReportByText(msg.replyToMessage().caption()).getId());
+                        botFunctions.sendMessage(msg.replyToMessage().forwardFrom().id(), "Ваш отчёт не отвечает требованиям. Пожалуйста проверьте условия в " +
+                                "меню " + BotCommands.MAINMENU_SEND_PET_REPORT, tgBot);
+                    }
+                    botFunctions.logger.info("REPLY DETECTED, SENDER OF ORIGINAL IS "
+                            + msg.replyToMessage().chat().firstName());
 
-                } else if (msg.text().equals("/отклонить")) {
-                    reportService.setApprove(0, reportService.getReportByText(msg.replyToMessage().caption()).getId());
-                    botFunctions.sendMessage(msg.replyToMessage().forwardFrom().id(), "Ваш отчёт не отвечает требованиям. Пожалуйста проверьте условия в " +
-                            "меню " + BotCommands.MAINMENU_SEND_PET_REPORT, tgBot);
+                } else if (msg.replyToMessage().text() != null) {
+                    if (msg.replyToMessage().text().contains("просит волонтёра на помощь") || msg.replyToMessage().text().contains("Ответ пользователя")) {
+                        String senderId = "";
+                        for (int i = 0; i < msg.replyToMessage().text().length() - 1; i++) {
+                            if (msg.replyToMessage().text().charAt(i) == ' ') break;
+                            senderId = senderId + msg.replyToMessage().text().charAt(i);
+
+                        }
+                        botFunctions.logger.info("SOMEONE NEED VOLUNTEER HELP " + senderId);
+                        botFunctions.sendMessage(Long.parseLong(senderId), msg.from().id() + " (Волонтёр " + msg.from().firstName() +
+                                ") Ответ волонтёра - ответьте на это сообщение (reply), для того что бы ответить волонтёру.\n\n" +
+                                "" + msg.text(), tgBot);
+                    }
                 }
-                botFunctions.logger.info("REPLY DETECTED, SENDER OF ORIGINAL IS "
-                        + msg.replyToMessage().chat().firstName());
             }
         });
     }
