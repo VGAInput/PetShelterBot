@@ -53,6 +53,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         ownerHandler.processPhoneContact(updates);
         ownerHandler.processSendPhotoReport(updates);
         ownerHandler.processTextRecognizing(updates);
+        ownerHandler.processReplyVolunteer(updates);
 
         volunteerHandler.processReplyReport(updates);
         volunteerHandler.processTextRecognizing(updates);
