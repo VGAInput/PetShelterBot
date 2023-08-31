@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/scripts/owners.sql
+  - include:
+      file: liquibase/scripts/dog_shelter.sql
+  - include:
+      file: liquibase/scripts/cat_shelter.sql
+  - include:
+      file: liquibase/scripts/volunteers.sql
+  - include:
+      file: liquibase/scripts/reports.sql
+
+
