@@ -120,21 +120,66 @@ class VolunteerServiceTest {
 
     @Test
     void isCurrentUserVolunteer() {
+        Mockito.when(volunteerRepositoryMock.findVolunteersById(any(Long.class))).thenReturn(volunteer);
+
+        Volunteer volunteer1 = volunteerService.getVolunteerByID(1L);
+
+        Assertions.assertThat(volunteer1).isEqualTo(volunteer);
     }
 
     @Test
-    void isReady() {
+    void isReadyReturnOneIfIsReady() {
+        Mockito.when(volunteerRepositoryMock.setReady(1, 1L)).thenReturn(1);
+
+        int result = volunteerRepositoryMock.setReady(1, 1L);
+
+        Assertions.assertThat(result).isEqualTo(1);
+    }
+
+    @Test
+    void isReadyReturnZeroIfIsNotReady() {
+        Mockito.when(volunteerRepositoryMock.setReady(0, 1L)).thenReturn(0);
+
+        int result = volunteerRepositoryMock.setReady(0, 1L);
+
+        Assertions.assertThat(result).isEqualTo(0);
     }
 
     @Test
     void getVolunteerByTgUserId() {
+        Mockito.when(volunteerRepositoryMock.findVolunteerByTgUserId(any(Long.class))).thenReturn(volunteers);
+
+        List<Volunteer> volunteers1 = volunteerService.getVolunteerByTgUserId(1L);
+
+        Assertions.assertThat(volunteers1.size()).isEqualTo(volunteers.size());
+        Assertions.assertThat(volunteers1).isEqualTo(volunteers);
     }
 
     @Test
-    void updateVolunteer() {
+    void updateVolunteerIfVolunteerIsExist() {
+        Mockito.when(volunteerRepositoryMock.existsById(any(Long.class))).thenReturn(true);
+        Mockito.when(volunteerRepositoryMock.save(any(Volunteer.class))).thenReturn(volunteer);
+
+        try {
+            Volunteer volunteer1 = volunteerService.updateVolunteer(volunteer);
+
+            Assertions.assertThat(volunteer.getName()).isEqualTo(volunteer1.getName());
+            Assertions.assertThat(volunteer.getShelterTableName()).isEqualTo(volunteer1.getShelterTableName());
+            Assertions.assertThat(volunteer.getTgUserId()).isEqualTo(volunteer1.getTgUserId());
+            Assertions.assertThat(volunteer.getIsReady()).isEqualTo(volunteer1.getIsReady());
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
-    void deleteVolunteer() {
+    void updateVolunteerThrowExceptionIfVolunteerDoesNotExist() {
+        Mockito.when(volunteerRepositoryMock.existsById(any(Long.class))).thenReturn(false);
+
+        Assertions.assertThatThrownBy(
+                        () -> volunteerService.updateVolunteer(volunteer)
+                )
+                .isInstanceOf(Exception.class)
+                .hasMessage("Этот волонтёр не найден в базе данных.");
     }
 }
